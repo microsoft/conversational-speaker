@@ -17,7 +17,7 @@ This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Wind
    - USB Omnidirectional Speakerphone (e.g. [this one](https://www.amazon.com/dp/B08THGFBTV)
 - Software
   - Azure Cognitive Speech Services
-    - **Free tier** supports 5 audio hours free per month and 1 concurrent request ([Azure Cognitive Services pricing](https://azure.microsoft.com/en-us/pricing/details/cognitive-services/speech-services)).
+    - **Free tier** supports 5 audio hours free per month and 1 concurrent request ([Azure Cognitive Services pricing](https://azure.microsoft.com/pricing/details/cognitive-services/speech-services)).
     - New Azure accounts include $200 in free credit that can be used during the first 30 days.
   - OpenAI
     - Davinci models (most powerful): $0.02 / ~750 words, Curie models (still pretty good with faster response time): $0.002 / ~750 words
@@ -52,8 +52,7 @@ The conversational speaker uses Azure Cognitive Service for speech-to-text and t
   1. Sign into your account at https://portal.azure.com.
   1. In the search bar at the top, enter `Cognitive Services` and under `Marketplace` select `Cognitive Services` (it may take a moment to populate).
   1. Verify the correct subscription is selected, then under `Resource Group` select `Create New` and enter a resource group name (e.g. `conv-speak-rg`)
-  1. Select a region and a name for your instance of Azure Cognitive Services (e.g. `my-conv-speak-cog-001`)
-   - For more details on pricing, see https://azure.microsoft.com/en-us/pricing/details/cognitive-services/, select your region, and select "Language".
+  1. Select a region and a name for your instance of Azure Cognitive Services (e.g. `my-conv-speak-cog-001`)   
   1. Click on `Review + Create` and after validation passes, click `Create`.
   1. When deployment has completed you can click "Go to resource" to view your Azure Cognitive Services resource.
   1. On the left side navigation bar, select `Keys and Endpoints` under `Resource Management`.
@@ -71,26 +70,6 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
 
   _If you are curious to play with the models directly, check out the `Playground` at the top of the page._
 
-### 2. Configuring API keys for desktop development
-  1. If you have not already, download and install the .NET 6 SDK for your platform here: https://dotnet.microsoft.com/en-us/download/dotnet/6.0.
-  1. Open a command-line terminal and change directory to `./src/ConversationalSpeaker`.
-  1. Run `dotnet user-secrets set "AzureCognitiveServices:Key" "****` and replace **** with one of the keys from your Azure Cognitive Services instance.
-  1. Run `dotnet user-secrets set "OpenAI:Key" "****` and replace **** with one of the keys from your OpenAI account.
-
-  Optionally you can set key values directly in `./src/ConversationalSpeaker/configuration.json`. 
-  Though, **THIS IS DANGEROUS** and you should never check-in API keys to a git repository - even locally.
-
-### * __If you accidentally checked in an API key to git:__
-1. Regenerate your OpenAI key: 
-   1. In a web browser, navigate to https://openai.com/api.
-   1. In the top-right corner click on your account, then "View API keys".
-   1. Click the garbage can next to the exposed API Key to delete it.
-   1. Click "+ Create new secret key" to regenerate a new one.
-1. Regenerate your Azure Cognitive Services key:
-   1. In a web browser, navigate to https://portal.azure.com and go to your instance of Azure Cognitive Services (e.g. `my-conv-speak-cog-001`)
-   1. On the left side navigation bar, select `Keys and Endpoints` under `Resource Management`.
-   1. Near the top of the screen, click either `Regenerate Key1` or `Regenerate Key2`, whichever one was checked in to git (regenerating both is also acceptable).
-
 ## The Code
 ### 1. Get and configure the code.
 1. On the Raspberry Pi or your PC, open a command-line terminal
@@ -99,7 +78,7 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
      ```
      wget -O - https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh | sudo bash
      ```
-   - For Windows, go to https://dotnet.microsoft.com/en-us/download, click `Download .NET SDK x64`, and run the installer.
+   - For Windows, go to https://dotnet.microsoft.com/download, click `Download .NET SDK x64`, and run the installer.
 1. Clone the repo
    ```
    git clone --recursive https://github.com/microsoft/conversational-speaker.git
@@ -158,7 +137,7 @@ with any additional questions or comments.
 ## Trademarks
 This project may contain trademarks or logos for projects, products, or services. Authorized use
 of Microsoft trademarks or logos is subject to and must follow
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
+[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion
 or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
