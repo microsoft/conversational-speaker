@@ -7,23 +7,23 @@ For more information about prompt design in general, checkout OpenAI's documenta
 
 This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Windows.
 
-## Usage
-- It is recommended to set context by starting with "Hello, my name is Jordan and I live in Redmond, Washington."
-- To start a new conversation, say "Start a new conversation". 
-- Switch to text input by changing the `System:TextListener` setting in `./src/ConversationalSpeaker/configuration.json` to `true`.
+**Build time**: 30 minutes
 
-# Estimated Costs
-- Hardware ~$50
-  - [Raspberry PI 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b)
-  - USB Omnidirectional Speakerphone (e.g. [this one](https://www.amazon.com/dp/B08THGFBTV)
-  
+**Read time**: 15 minutes
+
+**Cost**: 
+ - Hardware ~$50
+   - [Raspberry PI 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b)
+   - USB Omnidirectional Speakerphone (e.g. [this one](https://www.amazon.com/dp/B08THGFBTV)
 - Software
   - Azure Cognitive Speech Services
-    - Free tier: 5 audio hours free per month, 1 concurrent request
-    - New Azure accounts include $200 in free credit that can be used during the first 30 days. For more details on Azure Cognitive Services pricing: https://azure.microsoft.com/en-us/pricing/details/cognitive-services/speech-services/
+    - **Free tier** supports 5 audio hours free per month and 1 concurrent request ([Azure Cognitive Services pricing](https://azure.microsoft.com/en-us/pricing/details/cognitive-services/speech-services)).
+    - New Azure accounts include $200 in free credit that can be used during the first 30 days.
   - OpenAI
-    - Davinci models (most powerful): $0.02 / ~750 words,  Curie models (still pretty good with faster response time): $0.002 / ~750 words
+    - Davinci models (most powerful): $0.02 / ~750 words, Curie models (still pretty good with faster response time): $0.002 / ~750 words
     - New OpenAI accounts include $18 in free credit that can be used during your first 90 days. For more details: https://openai.com/api/pricing/
+
+
 
 # Setup
 You will need an instance of Azure Cognitive Services for speech-to-text and text-to-speech, as well as an OpenAI account in which to have a conversation. Let's set those up first...
@@ -116,7 +116,7 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
    dotnet build
    dotnet run
    ```
-   
+
 ### 2. (Optional) Setup the application to start on boot
 There are several ways to run a program when the Raspberry Pi boots. Below is my preferred method which runs the application in a visible terminal window automatically. This allows you to not only see the output but also cancel the application by clicking on the terminal windows and pressing CTRL+C. 
 1. Create a file `/etc/xdg/autostart/friendbot.desktop`
@@ -130,11 +130,14 @@ There are several ways to run a program when the Raspberry Pi boots. Below is my
    ```
    This will run the application in a terminal windows after the Raspberry Pi has finished booting.
 
-## Next Steps
-- Take a look at the `~/conversational-speaker/src/ConversationalSpeaker/configuration.json`. There you'll find setting to change 
-  - the AI's name (`PromptEngine:OutputPrefix`), 
-  - the AI's voice (`AzureCognitiveServices:SpeechSynthesisVoiceName`)
-  - even the AI's personality (`PromptEngine:Description`)
+## Usage
+- It is recommended to set context by starting with "Hello, my name is Jordan and I live in Redmond, Washington."
+- To start a new conversation, say "Start a new conversation". 
+- Take a look at the `~/conversational-speaker/src/ConversationalSpeaker/configuration.json`. 
+  - Change the AI's name (`PromptEngine:OutputPrefix`), 
+  - Change the AI's voice (`AzureCognitiveServices:SpeechSynthesisVoiceName`)
+  - Change the AI's personality (`PromptEngine:Description`)
+  - Switch to text input by changing the `System:TextListener` to `true` (good for testing changes).
   
 ## Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
