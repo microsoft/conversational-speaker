@@ -57,7 +57,7 @@ The conversational speaker uses Azure Cognitive Service for speech-to-text and t
   1. Click on `Review + Create` and after validation passes, click `Create`.
   1. When deployment has completed you can click "Go to resource" to view your Azure Cognitive Services resource.
   1. On the left side navigation bar, select `Keys and Endpoints` under `Resource Management`.
-   - Here you are able to view and copy your Cognitive Services API keys.
+   - Copy your Cognitive Services API key and endpoint. Save in a secure location for later.
 
 ## OpenAI
 The conversational speaker uses OpenAI's models to hold a friendly conversation. Below are the steps to create a new account and access the AI models.
