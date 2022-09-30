@@ -117,16 +117,21 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
 There are several ways to run a program when the Raspberry Pi boots. Below is my preferred method which runs the application in a visible terminal window automatically. This allows you to not only see the output but also cancel the application by clicking on the terminal windows and pressing CTRL+C. 
 1. Create a file `/etc/xdg/autostart/friendbot.desktop`
    ```
-   sudo nano /etc/xdg/autostart/myapp.desktop
+   sudo nano /etc/xdg/autostart/friendbot.desktop
    ```
 1. Put the following content into the file
    ```
    [Desktop Entry]
-   Exec=lxterminal --command "/bin/bash -c 'dotnet run --project ~/conversational-speaker/src/ConversationalSpeaker; /bin/bash'"
+   Exec=lxterminal --command "/bin/bash -c '~/.dotnet/dotnet run --project ~/conversational-speaker/src/ConversationalSpeaker; /bin/bash'"
    ```
-   This will run the application in a terminal windows after the Raspberry Pi has finished booting.
+   Press CTRL+O to save the file and CTRL+X to exit. This will run the application in a terminal windows after the Raspberry Pi has finished booting.
+1. To test out the changes you can reboot simply by running 
+   ```
+   reboot
+   ```
 
 ## 3. Usage
+- The current state of the prompt engine usually remains stable for short conversations. Sometimes during longer conversations, though, the AI may start responding with not only it's own response but what it thinks you might say next.
 - It is recommended to set context by starting with "Hello, my name is Jordan and I live in Redmond, Washington."
 - To start a new conversation, say "Start a new conversation". 
 - Take a look at the `~/conversational-speaker/src/ConversationalSpeaker/configuration.json`. 
