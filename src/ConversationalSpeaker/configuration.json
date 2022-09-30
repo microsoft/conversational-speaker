@@ -9,8 +9,7 @@
   },
 
   "AzureCognitiveServices": {
-    // dotnet user-secrets set "AzureCognitiveServices:Key" "****"
-    "Key": "",
+    "Key": "", // dotnet user-secrets set "AzureCognitiveServices:Key" "****"
     "Region": "WestUS3",
     "SpeechRecognitionLanguage": "en-US",
     // For a list of available voices, see: https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=stt-tts#text-to-speech
@@ -18,13 +17,12 @@
   },
 
   "OpenAI": {
-    // dotnet user-secrets set "OpenAI:Key" "****"
-    "Key": "",
+    "Key": "", // dotnet user-secrets set "OpenAI:Key" "****"
     "MaxTokens": 1024,
-    "Temperature": 0.7,
-    "TopP": 1,
-    "FrequencyPenalty": 0,
-    "PresencePenalty": 0,
+    "Temperature": 0.7, // 0.0 - 1.0
+    "TopP": 1, // 0.0 - 1.0
+    "FrequencyPenalty": 0, // 0.0 - 2.0
+    "PresencePenalty": 0, // 0.0 - 2.0
     // For faster response times, try the faster and still very capable model "TextCurieV1"
     // For a list of available models, see https://github.com/betalgo/openai/blob/master/OpenAI.SDK/ObjectModels/Models.cs
     "Model": "TextDavinciV2"
@@ -40,7 +38,6 @@
   },
 
   "System": {
-    // True to use text input rather than listening via microphone.
-    "TextListener": false,
+    "TextListener": false // True to use text input rather than listening via microphone.
   }
 }
