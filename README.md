@@ -7,6 +7,8 @@ For more information about prompt design in general, checkout OpenAI's documenta
 
 This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Windows.
 
+![Conversational Speaker](/package.png "Conversational Speaker")
+
 **Build time**: 30 minutes
 
 **Read time**: 15 minutes
@@ -22,7 +24,6 @@ This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Wind
   - OpenAI
     - Davinci models (most powerful): $0.02 / ~750 words, Curie models (still pretty good with faster response time): $0.002 / ~750 words
     - New OpenAI accounts include $18 in free credit that can be used during your first 90 days. For more details: https://openai.com/api/pricing/
-
 
 
 # Setup
@@ -70,8 +71,8 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
 
   _If you are curious to play with the models directly, check out the `Playground` at the top of the page._
 
-## The Code
-### 1. Get and configure the code.
+# The Code
+## 1. Get and configure the code.
 1. On the Raspberry Pi or your PC, open a command-line terminal
 1. Install .NET 6 SDK
    - For Rasbperry Pi and Linux:
@@ -96,7 +97,7 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
    dotnet run
    ```
 
-### 2. (Optional) Setup the application to start on boot
+## 2. (Optional) Setup the application to start on boot
 There are several ways to run a program when the Raspberry Pi boots. Below is my preferred method which runs the application in a visible terminal window automatically. This allows you to not only see the output but also cancel the application by clicking on the terminal windows and pressing CTRL+C. 
 1. Create a file `/etc/xdg/autostart/friendbot.desktop`
    ```
@@ -109,7 +110,7 @@ There are several ways to run a program when the Raspberry Pi boots. Below is my
    ```
    This will run the application in a terminal windows after the Raspberry Pi has finished booting.
 
-## Usage
+## 3. Usage
 - It is recommended to set context by starting with "Hello, my name is Jordan and I live in Redmond, Washington."
 - To start a new conversation, say "Start a new conversation". 
 - Take a look at the `~/conversational-speaker/src/ConversationalSpeaker/configuration.json`. 
