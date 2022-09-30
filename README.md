@@ -1,5 +1,5 @@
 # Conversational Speaker
-The Conversational Speaker enables having a spoken conversation with OpenAI large language models. This implementation listens to a user, processes the conversation through the OpenAI service, and speaks a response back to the user.
+The Conversational Speaker, informally known as "Friend Bot", uses a Raspberry Pi to enable a spoken conversation with OpenAI large language models. This implementation listens to speech, processes the conversation through the OpenAI service, and responds back.
 
 For more information on the prompt engine used for maintaining conversation context, go here: [python](https://github.com/microsoft/prompt-engine-py), [typescript](https://github.com/microsoft/prompt-engine), [dotnet](https://github.com/microsoft/prompt-engine-dotnet).
 
