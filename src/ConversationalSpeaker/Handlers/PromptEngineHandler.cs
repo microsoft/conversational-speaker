@@ -92,16 +92,14 @@ namespace ConversationalSpeaker
             }
             else
             {
-                if (completionResult.Error == null)
+                string errorMessage = "OpenAI GPT3 returned an error.";
+                if (completionResult.Error != null)
                 {
-                    _logger.LogError("OpenAI GPT3 returned an error.");
+                    errorMessage += $"{completionResult.Error.Code}: {completionResult.Error.Message}";
                 }
-                else
-                {
-                    _logger.LogError($"OpenAI GPT3 returned an error: {completionResult.Error.Code}: {completionResult.Error.Message}");
-                }
+                _logger.LogError(errorMessage);
 
-                return string.Empty;
+                throw new PromptEngineHandlerException(errorMessage);
             }
         }
     }

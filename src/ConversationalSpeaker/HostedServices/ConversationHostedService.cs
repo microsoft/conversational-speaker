@@ -41,11 +41,17 @@ namespace ConversationalSpeaker
                 {
                     if (!string.IsNullOrWhiteSpace(userPrompt.Message))
                     {
-                        string response = await _conversationProcessor.ProcessAsync(userPrompt.Message, cancellationToken);
-                        if (!string.IsNullOrWhiteSpace(response))
+                        string response;
+                        try
                         {
-                            _speakRequests.Enqueue(new SpeakRequest() { Message = response });
+                            response = await _conversationProcessor.ProcessAsync(userPrompt.Message, cancellationToken);
                         }
+                        catch (PromptEngineHandlerException)
+                        {
+                            response = "I'm sorry, I had an error. Please say that again.";
+                        }
+
+                        _speakRequests.Enqueue(new SpeakRequest() { Message = response });
                     }
                 }
             }
