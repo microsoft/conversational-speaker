@@ -31,13 +31,19 @@ You will need an instance of Azure Cognitive Services for speech-to-text and tex
 
 ## Raspberry Pi
 _If you are new to Raspberry Pis now would be a good time to check out the [getting started](https://projects.raspberrypi.org/en/projects/raspberry-pi-getting-started)._
-1. Insert an SD card into your system run the Raspberry Pi Imager.
-1. Go to https://www.raspberrypi.com/software/, download and run the Raspberry Pi Imager
+### 1. OS
+1. Insert an SD card into your PC
+1. Go to https://www.raspberrypi.com/software/ then download and run the Raspberry Pi Imager
 1. Click `Choose OS` and select the default Raspberry Pi OS (32-bit).
 1. Click `Choose Storage`, select the SD card
 1. Click `Write` and wait for the imaging to complete.
 1. Put the SD card into your Raspberry Pi and connect a keyboad, mouse, and monitor.
-1. Complete the initial setup, making sure to configure WiFi and apply recommended updates.
+1. Complete the initial setup, making sure to configure WiFi.
+
+### 2. USB Speaker/Microphone
+1. Plug in the USB speaker/microphone if you have not already
+1. Right-click on the volume icon in the top-right of the screen and make sure the USB device is selected.
+1. Right-click on the microphone icon in the top-right of the screen and make sure the USB device is selected.
 
 ## Azure
 The conversational speaker uses Azure Cognitive Service for speech-to-text and text-to-speech. Below are the steps to create an Azure account and an instance of Azure Cognitive Services.
@@ -56,8 +62,8 @@ The conversational speaker uses Azure Cognitive Service for speech-to-text and t
   1. Select a region and a name for your instance of Azure Cognitive Services (e.g. `my-conv-speak-cog-001`)   
   1. Click on `Review + Create` and after validation passes, click `Create`.
   1. When deployment has completed you can click "Go to resource" to view your Azure Cognitive Services resource.
-  1. On the left side navigation bar, select `Keys and Endpoints` under `Resource Management`.
-   - Copy your Cognitive Services API key and endpoint. Save in a secure location for later.
+  1. On the left side navigation bar, select `Keys and Endpoint` under `Resource Management`.
+   - Copy either of the two Cognitive Services keys and save in a secure location for later.
 
 ## OpenAI
 The conversational speaker uses OpenAI's models to hold a friendly conversation. Below are the steps to create a new account and access the AI models.
@@ -67,9 +73,9 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
   1. Complete the sign-up process (e.g. create a password, verify your email, etc).
      - If you are new to OpenAI, please review the usage guidelines (https://beta.openai.com/docs/usage-guidelines).
   1. In the top-right corner click on your account, then `View API keys`.
-     - Here you are able to view and copy your OpenAI API keys.
+  1. Click `+ Create new secret key`, copy it and save it in a secure location for later.
 
-  _If you are curious to play with the models directly, check out the `Playground` at the top of the page._
+  _If you are curious to play with the large language models directly, check out the `Playground` at the top of the page._
 
 # The Code
 ## 1. Get and configure the code.
@@ -77,7 +83,17 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
 1. Install .NET 6 SDK
    - For Rasbperry Pi and Linux:
      ```
-     wget -O - https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh | sudo bash
+     curl -sSL https://dot.net/v1/dotnet-install.sh | bash
+     ``` 
+     After installing is complete (it may take a few minutes), add dotnet to the command seach paths
+     ```
+     echo 'export DOTNET_ROOT=$HOME/.dotnet' >> ~/.bashrc
+     echo 'export PATH=$PATH:$HOME/.dotnet' >> ~/.bashrc
+     source ~/.bashrc
+     ```
+     You can verify that dotnet was installed successfully by checking the version
+     ```
+     dotnet --version
      ```
    - For Windows, go to https://dotnet.microsoft.com/download, click `Download .NET SDK x64`, and run the installer.
 1. Clone the repo
