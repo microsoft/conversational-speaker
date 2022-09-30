@@ -8,7 +8,7 @@ For more information about prompt design in general, checkout OpenAI's documenta
 This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Windows.
 
 ## Usage
-- I recommend setting context for yourself by startingn with "Hello, my name is Adrian and I live in Redmond, Washington."
+- It is recommended to set context by starting with "Hello, my name is Jordan and I live in Redmond, Washington."
 - To start a new conversation, say "Start a new conversation". 
 - You can switch to text input by changing the `System:TextListener` setting in `./src/ConversationalSpeaker/configuration.json` to `true`.
 
