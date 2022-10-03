@@ -27,7 +27,7 @@ This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Wind
 
 
 # Setup
-You will need an instance of Azure Cognitive Services for speech-to-text and text-to-speech, as well as an OpenAI account in which to have a conversation. Let's set those up first...
+You will need an instance of Azure Cognitive Services for speech-to-text and text-to-speech, as well as an OpenAI account in which to have a conversation. You can run the software on nearly any platform, but let's start with setting up a Raspberry Pi first...
 
 ## Raspberry Pi
 _If you are new to Raspberry Pis now would be a good time to check out the [getting started](https://projects.raspberrypi.org/en/projects/raspberry-pi-getting-started)._
@@ -37,8 +37,8 @@ _If you are new to Raspberry Pis now would be a good time to check out the [gett
 1. Click `Choose OS` and select the default Raspberry Pi OS (32-bit).
 1. Click `Choose Storage`, select the SD card
 1. Click `Write` and wait for the imaging to complete.
-1. Put the SD card into your Raspberry Pi and connect a keyboad, mouse, and monitor.
-1. Complete the initial setup, making sure to configure WiFi.
+1. Put the SD card into your Raspberry Pi and connect a keyboard, mouse, and monitor.
+1. Complete the initial setup, making sure to configure Wi-Fi.
 
 ### 2. USB Speaker/Microphone
 1. Plug in the USB speaker/microphone if you have not already
@@ -67,10 +67,10 @@ The conversational speaker uses Azure Cognitive Service for speech-to-text and t
 
 ## OpenAI
 The conversational speaker uses OpenAI's models to hold a friendly conversation. Below are the steps to create a new account and access the AI models.
-### 1. Create an OpenAI account (if your have not already)
+### 1. Create an OpenAI account (if you have not already)
   1. In a web browser, navigate to https://openai.com/api/ and click `Sign up`
   1. You can use a Google account, Microsoft account, or email to create a new account.
-  1. Complete the sign-up process (e.g. create a password, verify your email, etc).
+  1. Complete the sign-up process (e.g., create a password, verify your email, etc).
      - If you are new to OpenAI, please review the usage guidelines (https://beta.openai.com/docs/usage-guidelines).
   1. In the top-right corner click on your account, then `View API keys`.
   1. Click `+ Create new secret key`, copy it and save it in a secure location for later.
@@ -81,11 +81,11 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
 ## 1. Get and configure the code.
 1. On the Raspberry Pi or your PC, open a command-line terminal
 1. Install .NET 6 SDK
-   - For Rasbperry Pi and Linux:
+   - For Raspberry Pi and Linux:
      ```
      curl -sSL https://dot.net/v1/dotnet-install.sh | bash
      ``` 
-     After installing is complete (it may take a few minutes), add dotnet to the command seach paths
+     After installing is complete (it may take a few minutes), add dotnet to the command search paths
      ```
      echo 'export DOTNET_ROOT=$HOME/.dotnet' >> ~/.bashrc
      echo 'export PATH=$PATH:$HOME/.dotnet' >> ~/.bashrc
@@ -114,7 +114,7 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
    ```
 
 ## 2. (Optional) Setup the application to start on boot
-There are several ways to run a program when the Raspberry Pi boots. Below is my preferred method which runs the application in a visible terminal window automatically. This allows you to not only see the output but also cancel the application by clicking on the terminal windows and pressing CTRL+C. 
+There are several ways to run a program when the Raspberry Pi boots. Below is my preferred method which runs the application in a visible terminal window automatically. This allows you to not only see the output but also cancel the application by clicking on the terminal window and pressing CTRL+C. 
 1. Create a file `/etc/xdg/autostart/friendbot.desktop`
    ```
    sudo nano /etc/xdg/autostart/friendbot.desktop
@@ -124,14 +124,14 @@ There are several ways to run a program when the Raspberry Pi boots. Below is my
    [Desktop Entry]
    Exec=lxterminal --command "/bin/bash -c '~/.dotnet/dotnet run --project ~/conversational-speaker/src/ConversationalSpeaker; /bin/bash'"
    ```
-   Press CTRL+O to save the file and CTRL+X to exit. This will run the application in a terminal windows after the Raspberry Pi has finished booting.
+   Press CTRL+O to save the file and CTRL+X to exit. This will run the application in a terminal window after the Raspberry Pi has finished booting.
 1. To test out the changes you can reboot simply by running 
    ```
    reboot
    ```
 
 ## 3. Usage
-- The current state of the prompt engine usually remains stable for short conversations. Sometimes during longer conversations, though, the AI may start responding with not only it's own response but what it thinks you might say next.
+- The current state of the prompt engine usually remains stable for short conversations. Sometimes during longer conversations, though, the AI may start responding with not only its own response but what it thinks you might say next.
 - It is recommended to set context by starting with "Hello, my name is Jordan and I live in Redmond, Washington."
 - To start a new conversation, say "Start a new conversation". 
 - Take a look at the `~/conversational-speaker/src/ConversationalSpeaker/configuration.json`. 
