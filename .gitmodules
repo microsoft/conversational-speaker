@@ -1,0 +1,3 @@
+[submodule "src/prompt-engine-dotnet"]
+	path = src/prompt-engine-dotnet
+	url = https://github.com/microsoft/prompt-engine-dotnet.git
