@@ -6,9 +6,9 @@ using Microsoft.Extensions.Options;
 namespace ConversationalSpeaker
 {
     /// <summary>
-    /// A listener using Azure Cognitive Services Speech-To-Text
+    /// A listener using Azure Cognitive Services speech-to-text
     /// </summary>
-    internal class AzCognitiveServicesListener : IListener
+    internal class AzCognitiveServicesListener
     {
         private readonly ILogger _logger;
         private readonly AzureCognitiveServicesOptions _options;
@@ -18,14 +18,16 @@ namespace ConversationalSpeaker
         /// </summary>
         public AzCognitiveServicesListener(
             IOptions<AzureCognitiveServicesOptions> options,
-            ILogger<ListenerHostedService> logger)
+            ILogger<AzCognitiveServicesListener> logger)
         {
             _logger = logger;
             _options = options.Value;
             _options.Validate();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Listen to someone speaking and return the spoken text.
+        /// </summary>
         public async Task<string> ListenAsync(CancellationToken cancellationToken)
         {
             string result = "";

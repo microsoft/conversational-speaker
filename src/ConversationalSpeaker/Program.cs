@@ -35,36 +35,24 @@ builder.ConfigureServices((context, services) =>
     services.Configure<OpenAiServiceOptions>(configurationRoot.GetSection("OpenAI"));
     services.Configure<Settings>(configurationRoot.GetSection("PromptEngine"));
 
-    SystemOptions systemOptions = new SystemOptions();
-    configurationRoot.GetSection("System").Bind(systemOptions);
-
-    services.AddSingleton<ConcurrentMessageQueue<UserInput>>();
-    services.AddSingleton<ConcurrentMessageQueue<SpeakRequest>>();
+    // Add the OpenAI service
     services.AddOpenAIService((settings) =>
     {
-        settings.ApiKey = (services.BuildServiceProvider().GetService<IOptions<OpenAiServiceOptions>>() as IOptions<OpenAiServiceOptions>).Value.Key;
+        settings.ApiKey = (services.BuildServiceProvider().GetService<IOptions<OpenAiServiceOptions>>()).Value.Key;
     });
-    
+
     // Add the listener
-    if (systemOptions.TextListener)
-    {
-        services.AddSingleton<IListener, LocalKeyboardHandler>();
-    }
-    else
-    {
-        services.AddSingleton<IListener, AzCognitiveServicesListener>();
-    }
-    services.AddSingleton<ReadyToListenSignal>();
-    
+    services.AddSingleton<AzCognitiveServicesListener>();
+    // services.AddSingleton<LocalKeyboardHandler>();
+
     // Add the speaker
-    services.AddSingleton<ISpeaker, AzCognitiveServicesSpeaker>();
+    services.AddSingleton<AzCognitiveServicesSpeaker>();
     
     // Add the conversation processor
-    services.AddSingleton<IConversationHandler, PromptEngineHandler>();
+    services.AddSingleton<PromptEngineHandler>();
 
-    services.AddHostedService<ListenerHostedService>();
-    services.AddHostedService<ConversationHostedService>();
-    services.AddHostedService<SpeakerHostedService>();
+    // Add the primary hosted service to start the loop.
+    services.AddHostedService<SimpleLoopHostedService>();
 });
 
 IHost host = builder.Build();

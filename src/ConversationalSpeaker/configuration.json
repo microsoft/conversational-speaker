@@ -30,14 +30,10 @@
 
   "PromptEngine": {
     "PromptMaxLength": 512,
-    "Description": "Jerry is a friendly person who is good at conversation.",
+    "Description": "GP is a friendly, intelligent person who is good at conversation.",
     "DescriptionPrefix": "###",
     "InputPrefix": "You: ",
-    "OutputPrefix": "Jerry: ", // It helps if this matches the AI's name in the description.
+    "OutputPrefix": "GP: ", // It helps if this matches the AI's name in the description.
     "ContextResetText": "start a new conversation"
-  },
-
-  "System": {
-    "TextListener": false // True to use text input rather than listening via microphone.
   }
 }

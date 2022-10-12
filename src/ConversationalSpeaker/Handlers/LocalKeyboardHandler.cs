@@ -1,11 +1,10 @@
 ﻿namespace ConversationalSpeaker
 {
     /// <summary>
-    /// A listener for keyboard input.
+    /// A listener for keyboard input for interacting without the need to speak.
     /// </summary>
-    internal class LocalKeyboardHandler : IListener
+    internal class LocalKeyboardHandler
     {
-        /// <inheritdoc/>
         public Task<string> ListenAsync(CancellationToken cancellationToken)
         {
             string prompt = string.Empty;

@@ -5,16 +5,13 @@ using Microsoft.Extensions.Options;
 namespace ConversationalSpeaker
 {
     /// <summary>
-    /// 
+    /// A speaker using Azure Cognitive Services text-to-speech.
     /// </summary>
-    internal class AzCognitiveServicesSpeaker : ISpeaker
+    internal class AzCognitiveServicesSpeaker
     {
         private readonly AzureCognitiveServicesOptions _options;
         private readonly ILogger<AzCognitiveServicesSpeaker> _logger;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
         public AzCognitiveServicesSpeaker(
             IOptions<AzureCognitiveServicesOptions> options,
             ILogger<AzCognitiveServicesSpeaker> logger)
@@ -24,7 +21,9 @@ namespace ConversationalSpeaker
             _options.Validate();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Speak a message.
+        /// </summary>
         public async Task SpeakAsync(string message, CancellationToken cancellationToken)
         {
             _logger.LogDebug($"Speaking: {message}");
