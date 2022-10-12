@@ -18,12 +18,11 @@
 
   "OpenAI": {
     "Key": "", // dotnet user-secrets set "OpenAI:Key" "****"
-    "MaxTokens": 1024,
+    "MaxTokens": 1500,
     "Temperature": 0.7, // 0.0 - 1.0
     "TopP": 1, // 0.0 - 1.0
     "FrequencyPenalty": 0, // 0.0 - 2.0
     "PresencePenalty": 0, // 0.0 - 2.0
-    // For faster response times, try the faster and still very capable model "TextCurieV1"
     // For a list of available models, see https://github.com/betalgo/openai/blob/master/OpenAI.SDK/ObjectModels/Models.cs
     "Model": "TextDavinciV2"
   },

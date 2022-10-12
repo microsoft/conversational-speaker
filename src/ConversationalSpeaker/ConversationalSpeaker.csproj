@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Betalgo.OpenAI.GPT3" Version="6.3.0" />
-    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.23.0" />
+    <PackageReference Include="Betalgo.OpenAI.GPT3" Version="6.4.0" />
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.24.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
