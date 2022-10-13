@@ -43,8 +43,7 @@ builder.ConfigureServices((context, services) =>
 
     // Add the listener
     services.AddSingleton<AzCognitiveServicesListener>();
-    // services.AddSingleton<LocalKeyboardHandler>();
-
+    
     // Add the speaker
     services.AddSingleton<AzCognitiveServicesSpeaker>();
     
@@ -52,7 +51,7 @@ builder.ConfigureServices((context, services) =>
     services.AddSingleton<PromptEngineHandler>();
 
     // Add the primary hosted service to start the loop.
-    services.AddHostedService<SimpleLoopHostedService>();
+    services.AddHostedService<ConversationLoopHostedService>();
 });
 
 IHost host = builder.Build();

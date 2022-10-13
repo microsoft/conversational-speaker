@@ -4,14 +4,14 @@ using Microsoft.Extensions.Logging;
 namespace ConversationalSpeaker
 {
     /// <summary>
-    /// TODO
+    /// A hosted service providing the primary conversation loop.
     /// </summary>
-    internal class SimpleLoopHostedService : IHostedService, IDisposable
+    internal class ConversationLoopHostedService : IHostedService, IDisposable
     {
         private readonly AzCognitiveServicesListener _listener;
         private readonly AzCognitiveServicesSpeaker _speaker;
         private readonly PromptEngineHandler _conversationHandler;
-        private readonly ILogger<SimpleLoopHostedService> _logger;
+        private readonly ILogger<ConversationLoopHostedService> _logger;
 
         private Task _executeTask;
         private readonly CancellationTokenSource _cancelToken = new();
@@ -19,11 +19,11 @@ namespace ConversationalSpeaker
         /// <summary>
         /// Constructor
         /// </summary>
-        public SimpleLoopHostedService(
+        public ConversationLoopHostedService(
             AzCognitiveServicesListener listener,
             AzCognitiveServicesSpeaker speaker,
             PromptEngineHandler conversationHandler,
-            ILogger<SimpleLoopHostedService> logger)
+            ILogger<ConversationLoopHostedService> logger)
         {
             _listener = listener;
             _speaker = speaker;
@@ -45,7 +45,7 @@ namespace ConversationalSpeaker
         /// </summary>
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            // Wake word detected, say hello
+            // Say hello on startup
             await _speaker.SpeakAsync("Hello!", cancellationToken);
 
             // Start listening
