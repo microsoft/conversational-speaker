@@ -65,6 +65,9 @@ The conversational speaker uses Azure Cognitive Service for speech-to-text and t
   1. On the left side navigation bar, select `Keys and Endpoint` under `Resource Management`.
    - Copy either of the two Cognitive Services keys and save in a secure location for later.
 
+
+
+
 ## OpenAI
 The conversational speaker uses OpenAI's models to hold a friendly conversation. Below are the steps to create a new account and access the AI models.
 ### 1. Create an OpenAI account (if you have not already)
@@ -129,6 +132,11 @@ There are several ways to run a program when the Raspberry Pi boots. Below is my
    ```
    reboot
    ```
+## 3. (Optional) Create a custom wake word
+The code base has a default wake word (i.e. "Hey, Computer.") already, which I suggest you use first. If you want to create your own (free!) custom wake word, then follow the steps below.
+  1. Create a custom keyword model using the directions here: https://aka.ms/hackster/microsoft/wakeword. 
+  1. Download the model, extract the `.table` file, and overwrite `src/ConversationalSpeaker/Handlers/WakeWordModel.table`.
+  1. Rebuild and run the project to use your custom wake word.
 
 ## 3. Usage
 - The current state of the prompt engine usually remains stable for short conversations. Sometimes during longer conversations, though, the AI may start responding with not only its own response but what it thinks you might say next.
