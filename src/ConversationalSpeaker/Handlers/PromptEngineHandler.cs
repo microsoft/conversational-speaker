@@ -16,13 +16,15 @@ namespace ConversationalSpeaker
     /// This implementation is using the Betalgo.OpenAI.GPT3 unofficial OpenAI SDK.
     /// You can find the code here: https://github.com/betalgo/openai
     /// </remarks>
-    internal class PromptEngineHandler : IConversationHandler
+    internal class PromptEngineHandler
     {
-        private readonly ILogger _logger;
         private readonly OpenAiServiceOptions _openAiServiceOptions;
         private readonly Settings _promptEngineOptions;
-        private readonly List<Interaction> _promptEngineInteractions = new List<Interaction>();
         private readonly IOpenAIService _openAIService;
+        private readonly ILogger _logger;
+        
+        
+        private readonly List<Interaction> _promptEngineInteractions = new List<Interaction>();
         
         private readonly Models.Model _model;
         private readonly GenericEngine _promptEngine;
@@ -50,7 +52,9 @@ namespace ConversationalSpeaker
             _promptEngine = new GenericEngine(_promptEngineOptions);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Take input from the user, process with the prompt engine, send the rendered prompt to GPT-3, and return the response.
+        /// </summary>
         public async Task<string> ProcessAsync(string input, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(input))
@@ -68,7 +72,7 @@ namespace ConversationalSpeaker
             
             _logger.LogDebug($"Prompt:{Environment.NewLine}{prompt.ToString()}");
 
-            // Send the conversation to GPT
+            // Send the conversation to GPT-3
             CompletionCreateResponse completionResult = await _openAIService.Completions.Create(
                 new CompletionCreateRequest()
                 {
@@ -95,11 +99,13 @@ namespace ConversationalSpeaker
                 string errorMessage = "OpenAI GPT3 returned an error.";
                 if (completionResult.Error != null)
                 {
-                    errorMessage += $"{completionResult.Error.Code}: {completionResult.Error.Message}";
+                    _logger.LogError($"{errorMessage} {completionResult.Error.Code}: {completionResult.Error.Message}");
                 }
-                _logger.LogError(errorMessage);
-
-                throw new PromptEngineHandlerException(errorMessage);
+                else
+                {
+                    _logger.LogError(errorMessage);
+                }
+                return errorMessage;
             }
         }
     }

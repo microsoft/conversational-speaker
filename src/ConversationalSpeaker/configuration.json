@@ -13,31 +13,26 @@
     "Region": "WestUS3",
     "SpeechRecognitionLanguage": "en-US",
     // For a list of available voices, see: https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=stt-tts#text-to-speech
-    "SpeechSynthesisVoiceName": "en-US-JennyNeural"
+    "SpeechSynthesisVoiceName": "en-US-JennyNeural",
   },
 
   "OpenAI": {
     "Key": "", // dotnet user-secrets set "OpenAI:Key" "****"
-    "MaxTokens": 1024,
+    "MaxTokens": 1500,
     "Temperature": 0.7, // 0.0 - 1.0
     "TopP": 1, // 0.0 - 1.0
     "FrequencyPenalty": 0, // 0.0 - 2.0
     "PresencePenalty": 0, // 0.0 - 2.0
-    // For faster response times, try the faster and still very capable model "TextCurieV1"
     // For a list of available models, see https://github.com/betalgo/openai/blob/master/OpenAI.SDK/ObjectModels/Models.cs
     "Model": "TextDavinciV2"
   },
 
   "PromptEngine": {
     "PromptMaxLength": 512,
-    "Description": "Jerry is a friendly person who is good at conversation.",
+    "Description": "Computer is a friendly, intelligent person who is good at conversation.",
     "DescriptionPrefix": "###",
     "InputPrefix": "You: ",
-    "OutputPrefix": "Jerry: ", // It helps if this matches the AI's name in the description.
+    "OutputPrefix": "Computer: ", // It helps if this matches the AI's name in the description.
     "ContextResetText": "start a new conversation"
-  },
-
-  "System": {
-    "TextListener": false // True to use text input rather than listening via microphone.
   }
 }
