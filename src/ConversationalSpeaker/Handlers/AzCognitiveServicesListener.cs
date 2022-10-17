@@ -6,40 +6,44 @@ using Microsoft.Extensions.Options;
 namespace ConversationalSpeaker
 {
     /// <summary>
-    /// A listener using Azure Cognitive Services Speech-To-Text
+    /// A listener using Azure Cognitive Services speech-to-text
     /// </summary>
-    internal class AzCognitiveServicesListener : IListener
+    internal class AzCognitiveServicesListener : IDisposable
     {
         private readonly ILogger _logger;
         private readonly AzureCognitiveServicesOptions _options;
+        private readonly AudioConfig _audioConfig;
+        private readonly SpeechRecognizer _speechRecognizer;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public AzCognitiveServicesListener(
             IOptions<AzureCognitiveServicesOptions> options,
-            ILogger<ListenerHostedService> logger)
+            ILogger<AzCognitiveServicesListener> logger)
         {
             _logger = logger;
             _options = options.Value;
             _options.Validate();
+
+            SpeechConfig speechConfig = SpeechConfig.FromSubscription(_options.Key, _options.Region);
+            speechConfig.SpeechRecognitionLanguage = _options.SpeechRecognitionLanguage;
+
+            _audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+            _speechRecognizer = new SpeechRecognizer(speechConfig, _audioConfig);
+
+            speechConfig.SetProperty(PropertyId.SpeechServiceResponse_PostProcessingOption, "2");
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Listen to someone speaking and return the spoken text.
+        /// </summary>
         public async Task<string> ListenAsync(CancellationToken cancellationToken)
         {
             string result = "";
             TaskCompletionSource recognitionEnd = new TaskCompletionSource();
 
-            SpeechConfig speechConfig = SpeechConfig.FromSubscription(_options.Key, _options.Region);
-            speechConfig.SpeechRecognitionLanguage = _options.SpeechRecognitionLanguage;
-
-            using AudioConfig audioConfig = AudioConfig.FromDefaultMicrophoneInput();
-            using SpeechRecognizer speechRecognizer = new SpeechRecognizer(speechConfig, audioConfig);
-
-            speechConfig.SetProperty(PropertyId.SpeechServiceResponse_PostProcessingOption, "2");
-
-            speechRecognizer.Recognized += (object sender, SpeechRecognitionEventArgs e) =>
+            _speechRecognizer.Recognized += (object sender, SpeechRecognitionEventArgs e) =>
             {
                 if (ResultReason.RecognizedSpeech == e.Result.Reason &&
                     !string.IsNullOrWhiteSpace(e.Result.Text))
@@ -54,7 +58,7 @@ namespace ConversationalSpeaker
                 }
             };
 
-            speechRecognizer.Canceled += (object sender, SpeechRecognitionCanceledEventArgs e) =>
+            _speechRecognizer.Canceled += (object sender, SpeechRecognitionCanceledEventArgs e) =>
             {
                 if (CancellationReason.Error == e.Reason)
                 {
@@ -67,18 +71,25 @@ namespace ConversationalSpeaker
                 recognitionEnd.SetCanceled();
             };
 
-            speechRecognizer.SessionStopped += (object sender, SessionEventArgs e) =>
+            _speechRecognizer.SessionStopped += (object sender, SessionEventArgs e) =>
             {
                 _logger.LogInformation($"Stopped listening.");
             };
 
-            await speechRecognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
+            await _speechRecognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
             
             Task.WaitAll(new[] { recognitionEnd.Task });
             
-            await speechRecognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
+            await _speechRecognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
             
             return result;
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            _speechRecognizer.Dispose();
+            _audioConfig.Dispose();
         }
     }
 }

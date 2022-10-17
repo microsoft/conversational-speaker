@@ -62,6 +62,9 @@
 
             if (PresencePenalty < 0 || PresencePenalty > 2)
                 throw new ArgumentException("Argument is invalid.", nameof(PresencePenalty));
+            
+            if (string.IsNullOrWhiteSpace(Model))
+                throw new ArgumentException("Argument is invalid.", nameof(Model));
         }
     }
 }
