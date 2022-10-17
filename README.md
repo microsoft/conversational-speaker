@@ -16,7 +16,7 @@ This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Wind
 **Cost**: 
  - Hardware ~$50
    - [Raspberry PI 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b)
-   - USB Omnidirectional Speakerphone (e.g. [this one](https://www.amazon.com/dp/B08THGFBTV)
+   - USB Omnidirectional Speakerphone (e.g. [this one](https://www.amazon.com/dp/B08THGFBTV))
 - Software
   - Azure Cognitive Speech Services
     - **Free tier** supports 5 audio hours free per month and 1 concurrent request ([Azure Cognitive Services pricing](https://azure.microsoft.com/pricing/details/cognitive-services/speech-services)).
@@ -98,7 +98,7 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
    - For Windows, go to https://dotnet.microsoft.com/download, click `Download .NET SDK x64`, and run the installer.
 1. Clone the repo
    ```
-   git clone --recursive https://github.com/microsoft/conversational-speaker.git
+   git clone --recursive --branch hackster-tutorial-1 https://github.com/microsoft/conversational-speaker.git
    ```
 1. Set your API keys, replacing `{MyCognitiveServicesKey}` with your Azure Cognitive Services key and `{MyOpenAIKey}` with your OpenAI API key from the sections above.
    ```
