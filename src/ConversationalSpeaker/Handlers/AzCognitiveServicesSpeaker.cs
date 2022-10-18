@@ -45,8 +45,6 @@ namespace ConversationalSpeaker
                 string ssml = GenerateSsml(message, style, _options.SpeechSynthesisVoiceName);
                 _logger.LogDebug(ssml);
                 await _speechSynthesizer.SpeakSsmlAsync(ssml);
-                
-                await Task.Delay(0);
             }
         }
 
