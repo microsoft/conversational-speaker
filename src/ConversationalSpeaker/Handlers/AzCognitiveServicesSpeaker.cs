@@ -34,6 +34,7 @@ namespace ConversationalSpeaker
         {
             if (!string.IsNullOrWhiteSpace(message))
             {
+                // Parse speaking style, if any
                 _logger.LogInformation($"Speaking: {message}");
                 await _speechSynthesizer.SpeakTextAsync(message);
             }
