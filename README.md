@@ -82,32 +82,32 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
 1. On the Raspberry Pi or your PC, open a command-line terminal
 1. Install .NET 6 SDK
    - For Raspberry Pi and Linux:
-     ```
+     ```bash
      curl -sSL https://dot.net/v1/dotnet-install.sh | bash
      ``` 
      After installing is complete (it may take a few minutes), add dotnet to the command search paths
-     ```
+     ```bash
      echo 'export DOTNET_ROOT=$HOME/.dotnet' >> ~/.bashrc
      echo 'export PATH=$PATH:$HOME/.dotnet' >> ~/.bashrc
      source ~/.bashrc
      ```
      You can verify that dotnet was installed successfully by checking the version
-     ```
+     ```bash
      dotnet --version
      ```
    - For Windows, go to https://dotnet.microsoft.com/download, click `Download .NET SDK x64`, and run the installer.
 1. Clone the repo
-   ```
+   ```bash
    git clone --recursive https://github.com/microsoft/conversational-speaker.git
    ```
 1. Set your API keys, replacing `{MyCognitiveServicesKey}` with your Azure Cognitive Services key and `{MyOpenAIKey}` with your OpenAI API key from the sections above.
-   ```
+   ```bash
    cd ~/conversational-speaker/src/ConversationalSpeaker
    dotnet user-secrets set "AzureCognitiveServices:Key" "{MyCognitiveServicesKey}"
    dotnet user-secrets set "OpenAI:Key" "{MyOpenAIKey}"
    ```
 1. Build and run the code!
-   ```
+   ```bash
    cd ~/conversational-speaker/src/ConversationalSpeaker
    dotnet build
    dotnet run
@@ -116,17 +116,17 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
 ## 2. (Optional) Setup the application to start on boot
 There are several ways to run a program when the Raspberry Pi boots. Below is my preferred method which runs the application in a visible terminal window automatically. This allows you to not only see the output but also cancel the application by clicking on the terminal window and pressing CTRL+C. 
 1. Create a file `/etc/xdg/autostart/friendbot.desktop`
-   ```
+   ```bash
    sudo nano /etc/xdg/autostart/friendbot.desktop
    ```
 1. Put the following content into the file
-   ```
+   ```bash
    [Desktop Entry]
    Exec=lxterminal --command "/bin/bash -c '~/.dotnet/dotnet run --project ~/conversational-speaker/src/ConversationalSpeaker; /bin/bash'"
    ```
    Press CTRL+O to save the file and CTRL+X to exit. This will run the application in a terminal window after the Raspberry Pi has finished booting.
 1. To test out the changes you can reboot simply by running 
-   ```
+   ```bash
    reboot
    ```
 ## 3. (Optional) Create a custom wake word
@@ -136,7 +136,6 @@ The code base has a default wake word (i.e. "Hey, Computer.") already, which I s
   1. Rebuild and run the project to use your custom wake word.
 
 ## 3. Usage
-- The current state of the prompt engine usually remains stable for short conversations. Sometimes during longer conversations, though, the AI may start responding with not only its own response but what it thinks you might say next.
 - It is recommended to set context by starting with "Hello, my name is Jordan and I live in Redmond, Washington."
 - To start a new conversation, say "Start a new conversation". 
 - Take a look at the `~/conversational-speaker/src/ConversationalSpeaker/configuration.json`. 
@@ -144,8 +143,113 @@ The code base has a default wake word (i.e. "Hey, Computer.") already, which I s
   - Change the AI's voice (`AzureCognitiveServices:SpeechSynthesisVoiceName`)
   - Change the AI's personality (`PromptEngine:Description`)
   - Switch to text input by changing the `System:TextListener` to `true` (good for testing changes).
-  
-## Contributing
+- The current state of the prompt engine usually remains stable for short conversations. Sometimes during longer conversations, though, the AI may start responding with not only its own response but what it thinks you might say next.
+- Take a look at Azure Cognitive Service's [style support page](https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=stt-tts#voice-styles-and-roles) to see which languages support which emotional styles, then play with the `AzureCognitiveServices:SpeechSynthesisVoiceName` and `PromptEngine` settings in `src/ConverstationalSpeaker/configuration.json`.
+
+# How It Works
+## Primary Logic
+For our application, we are using .NET's generic "HostBuilder" paradigm. The HostBuilder encapsulates handling dependencies (i.e. dependency injection), configuration, logging, and running a set of hosted services. In our case, we only have one hosted service, `ConversationLoopHostedService`, which contains our primary logic loop.
+```C#
+// ConversationLoopHostedService.cs
+while (!cancellationToken.IsCancellationRequested)
+{     
+      // Listen to the user.
+      string userMessage = await _listener.ListenAsync(cancellationToken);
+      // Run the message through the AI and get a response.
+      string response = await _conversationHandler.ProcessAsync(userMessage, cancellationToken);
+      // Speak the response.
+      await _speaker.SpeakAsync(response, cancellationToken);
+}
+```
+
+## Wake Word/Phrase
+Azure Cognitive Service's has an excellent (and free!) wake word support. After generating a keyword model (see "Create a custom wake word" above), we load it into the speech SDK and wait for the system to recognize the keyword.
+```C#
+// AzCognitiveServicesWakeWordListener.cs
+_keywordModel = KeywordRecognitionModel.FromFile(keywordModelPath);
+_audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+_keywordRecognizer = new KeywordRecognizer(_audioConfig);
+do
+{
+   result = await _keywordRecognizer.RecognizeOnceAsync(_keywordModel);
+} while (result.Reason != ResultReason.RecognizedKeyword);
+```
+
+## Listening
+To listen to the user, we leverage Azure Cognitive Service's [speech-to-text feature](https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/speech-to-text). The feature supports many languages and configurations, and for this project we are defaulting to US english (`en-US`) and the default system microphone.
+```C#
+// AzCognitiveServicesListener.cs
+// Configure the connection to Azure.
+SpeechConfig speechConfig = SpeechConfig.FromSubscription(_options.Key, _options.Region);
+speechConfig.SpeechRecognitionLanguage = _options.SpeechRecognitionLanguage;
+speechConfig.SetProperty(PropertyId.SpeechServiceResponse_PostProcessingOption, "TrueText");
+
+// Configure the local audio setup
+_audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+_speechRecognizer = new SpeechRecognizer(speechConfig, _audioConfig);
+```
+
+## AI
+To enable the conversation part, we send the user's spoken text into an OpenAI GPT-3 large language model with a little help from a prompt engine. The prompt engine remembers a description of the AI, tracks previous inputs and responses, and adds any new responses to future interactions. Since we want the AI to add emotion/style cues, we seed the prompt with a few example interactions to teach it how to respond. The double-tilda bracketed cues give our application something that is easy to parse and forward to our text-to-speech API.
+```
+### Computer is a friendly, intelligent, and curious person who is good at conversation. Each response from Computer should end with a word representing Computer's emotion state, such as ~~chat~~, ~~angry~~, ~~cheerful~~, ~~sad~~, ~~excited~~, ~~friendly~~, ~~terrified~~, ~~shouting~~, ~~unfriendly~~, ~~whispering~~, and ~~hopeful~~.
+
+Human: Hello
+Computer: Hello! How are you? ~~friendly~~
+
+Human: I am doing well, how about you?
+Computer: I am doing very well! ~~excited~~
+
+Human: What are you up to?
+Computer: I am just hanging out and talking to people. ~~chat~~
+```
+
+When when we talk to the AI, we send the hints above, along with other previous interactions, and the AI attempts to append appropriate cues to its responses.
+
+The prompt design is asking OpenAI to complete the prompt or, in other words, ask "what would Computer say here?" If we were to say "I am doing well!", the prompt engine would render prompt like the one below and ask OpenAI to complete it.
+```
+### Computer is a friendly, intelligent, and curious person who is good at conversation. Each response from Computer should end with a word representing Computer's emotion state, such as ~~chat~~, ~~angry~~, ~~cheerful~~, ~~sad~~, ~~excited~~, ~~friendly~~, ~~terrified~~, ~~shouting~~, ~~unfriendly~~, ~~whispering~~, and ~~hopeful~~.
+
+Human: Hello
+Computer: Hello! How are you? ~~friendly~~
+
+Human: I am doing well, how about you?
+Computer: I am doing very well! ~~excited~~
+
+Human: What are you up to?
+Computer: I am just hanging out and talking to people. ~~chat~~
+
+Human: Hello. How are you?
+Computer: Hello! I am doing very well. How about yourself?
+
+Human: I am doing well!
+Computer:
+```
+With any luck, OpenAI will respond with something like `"That's great to hear! ~~excited~~"` and our prompt engine will that that response to the list of interactions.
+
+In this way, we have the AI build a simple history for itself by having our prompt engine remember previous interactions and send them back to the AI in subsequent interactions. Check out `PromptEngineHandler.cs` for how we process interactions and call into OpenAI. For more information on prompt design, check out https://beta.openai.com/docs/guides/completion/prompt-design.
+
+## Speaking
+And last, but not least, we head back to Azure Cognitive Services for its text-to-speech feature to give a voice to our AI. Since we are parsing out a style cue from OpenAI, we'll need to use the text-to-speech's Speech Synthesis Markup Language (SSML) support.
+```C#
+// AzCognitiveServicesSpeaker.cs
+SpeechConfig speechConfig = SpeechConfig.FromSubscription(_options.Key, _options.Region);
+speechConfig.SpeechSynthesisVoiceName = _options.SpeechSynthesisVoiceName;
+_speechSynthesizer = new SpeechSynthesizer(speechConfig);
+message = ExtractStyle(message, out string style);
+string ssml = GenerateSsml(message, style, _options.SpeechSynthesisVoiceName);
+await _speechSynthesizer.SpeakSsmlAsync(ssml);
+```
+In the case of speaking `"That's great to hear! ~~excited~~"`, the SSML sent to Azure Cognitive Services would like like this: 
+```XML
+<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
+  <voice name="en-US-JennyNeural">
+    <mstts:express-as style="excited">That's great to hear!</mstts:express-as>
+  </voice>
+</speak>
+```
+
+# Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
