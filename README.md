@@ -59,7 +59,7 @@ The conversational speaker uses Azure Cognitive Service for speech-to-text and t
   1. Sign into your account at https://portal.azure.com.
   1. In the search bar at the top, enter `Cognitive Services` and under `Marketplace` select `Cognitive Services` (it may take a moment to populate).
   1. Verify the correct subscription is selected, then under `Resource Group` select `Create New` and enter a resource group name (e.g. `conv-speak-rg`)
-  1. Select a region and a name for your instance of Azure Cognitive Services (e.g. `my-conv-speak-cog-001`)   
+  1. Select a region and a name for your instance of Azure Cognitive Services (e.g. `my-conv-speak-cog-001`). I recommend using either East US, West Europe, or Southeast Asia as those regions tend to support the greatest number of features.
   1. Click on `Review + Create` and after validation passes, click `Create`.
   1. When deployment has completed you can click "Go to resource" to view your Azure Cognitive Services resource.
   1. On the left side navigation bar, select `Keys and Endpoint` under `Resource Management`.
