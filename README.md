@@ -85,32 +85,32 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
 1. On the Raspberry Pi or your PC, open a command-line terminal
 1. Install .NET 6 SDK
    - For Raspberry Pi and Linux:
-     ```
+     ```bash
      curl -sSL https://dot.net/v1/dotnet-install.sh | bash
      ``` 
      After installing is complete (it may take a few minutes), add dotnet to the command search paths
-     ```
+     ```bash
      echo 'export DOTNET_ROOT=$HOME/.dotnet' >> ~/.bashrc
      echo 'export PATH=$PATH:$HOME/.dotnet' >> ~/.bashrc
      source ~/.bashrc
      ```
      You can verify that dotnet was installed successfully by checking the version
-     ```
+     ```bash
      dotnet --version
      ```
    - For Windows, go to https://dotnet.microsoft.com/download, click `Download .NET SDK x64`, and run the installer.
 1. Clone the repo
-   ```
+   ```bash
    git clone --recursive https://github.com/microsoft/conversational-speaker.git
    ```
 1. Set your API keys, replacing `{MyCognitiveServicesKey}` with your Azure Cognitive Services key and `{MyOpenAIKey}` with your OpenAI API key from the sections above.
-   ```
+   ```bash
    cd ~/conversational-speaker/src/ConversationalSpeaker
    dotnet user-secrets set "AzureCognitiveServices:Key" "{MyCognitiveServicesKey}"
    dotnet user-secrets set "OpenAI:Key" "{MyOpenAIKey}"
    ```
 1. Build and run the code!
-   ```
+   ```bash
    cd ~/conversational-speaker/src/ConversationalSpeaker
    dotnet build
    dotnet run
@@ -119,17 +119,17 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
 ## 2. (Optional) Setup the application to start on boot
 There are several ways to run a program when the Raspberry Pi boots. Below is my preferred method which runs the application in a visible terminal window automatically. This allows you to not only see the output but also cancel the application by clicking on the terminal window and pressing CTRL+C. 
 1. Create a file `/etc/xdg/autostart/friendbot.desktop`
-   ```
+   ```bash
    sudo nano /etc/xdg/autostart/friendbot.desktop
    ```
 1. Put the following content into the file
-   ```
+   ```bash
    [Desktop Entry]
    Exec=lxterminal --command "/bin/bash -c '~/.dotnet/dotnet run --project ~/conversational-speaker/src/ConversationalSpeaker; /bin/bash'"
    ```
    Press CTRL+O to save the file and CTRL+X to exit. This will run the application in a terminal window after the Raspberry Pi has finished booting.
 1. To test out the changes you can reboot simply by running 
-   ```
+   ```bash
    reboot
    ```
 ## 3. (Optional) Create a custom wake word
@@ -147,8 +147,81 @@ The code base has a default wake word (i.e. "Hey, Computer.") already, which I s
   - Change the AI's voice (`AzureCognitiveServices:SpeechSynthesisVoiceName`)
   - Change the AI's personality (`PromptEngine:Description`)
   - Switch to text input by changing the `System:TextListener` to `true` (good for testing changes).
-  
-## Contributing
+
+# How It Works
+## Primary Logic
+For our application, we are using .NET's generic "HostBuilder" paradigm. The HostBuilder encapsulates handling dependencies (i.e. dependency injection), configuration, logging, and running a set of hosted services. In our case, we only have one hosted service, `ConversationLoopHostedService`, which contains our primary logic loop.
+```C#
+// ConversationLoopHostedService.cs
+while (!cancellationToken.IsCancellationRequested)
+{     
+      // Listen to the user.
+      string userMessage = await _listener.ListenAsync(cancellationToken);
+      // Run the message through the AI and get a response.
+      string response = await _conversationHandler.ProcessAsync(userMessage, cancellationToken);
+      // Speak the response.
+      await _speaker.SpeakAsync(response, cancellationToken);
+}
+```
+
+## Wake Word/Phrase
+Azure Cognitive Service's has an excellent (and free!) wake word support. After generating a keyword model (see "Create a custom wake word" above), we load it into the speech SDK and wait for the system to recognize the keyword.
+```C#
+// AzCognitiveServicesWakeWordListener.cs
+_keywordModel = KeywordRecognitionModel.FromFile(keywordModelPath);
+_audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+_keywordRecognizer = new KeywordRecognizer(_audioConfig);
+do
+{
+   result = await _keywordRecognizer.RecognizeOnceAsync(_keywordModel);
+} while (result.Reason != ResultReason.RecognizedKeyword);
+```
+
+## Listening
+To listen to the user, we leverage Azure Cognitive Service's [speech-to-text feature](https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/speech-to-text). The feature supports many languages and configurations, and for this project we are defaulting to US english (`en-US`) and the default system microphone.
+```C#
+// AzCognitiveServicesListener.cs
+// Configure the connection to Azure.
+SpeechConfig speechConfig = SpeechConfig.FromSubscription(_options.Key, _options.Region);
+speechConfig.SpeechRecognitionLanguage = _options.SpeechRecognitionLanguage;
+speechConfig.SetProperty(PropertyId.SpeechServiceResponse_PostProcessingOption, "TrueText");
+
+// Configure the local audio setup
+_audioConfig = AudioConfig.FromDefaultMicrophoneInput();
+_speechRecognizer = new SpeechRecognizer(speechConfig, _audioConfig);
+```
+
+## AI
+To enable the conversation part, we send the user's spoken text into an OpenAI GPT-3 large language model with a little help from a prompt engine. The prompt engine remembers a description of the AI, tracks previous inputs and responses, and adds any new responses to future interactions. For instance, here is a prompt that is sent to OpenAI if we were to first say "Hello. How are you?"
+```
+### Computer is a friendly, intelligent person who is good at conversation.
+
+Human: Hello. How are you?
+Computer:
+```
+The prompt design here is essentially asking OpenAI to complete the prompt or, in other words, what would Computer say here? If OpenAI were to respond with something like "Hello! I am doing very well. How about yourself?", then the prompt engine would remember that response and make sure to include it in the next prompt:
+```
+### Computer is a friendly, intelligent person who is good at conversation.
+
+Human: Hello. How are you?
+Computer: Hello! I am doing very well. How about yourself?
+
+Human: I am doing well!
+Computer:
+```
+In this way, we have the AI build a simple history for itself by having our prompt engine remember previous interactions and send them back to the AI in subsequent interactions. Check out `PromptEngineHandler.cs` for how we process interactions and call into OpenAI. For more information on prompt design, check out https://beta.openai.com/docs/guides/completion/prompt-design.
+
+## Speaking
+And last, but not least, we head back to Azure Cognitive Services for its text-to-speech feature to give a voice to our AI. 
+```C#
+// AzCognitiveServicesSpeaker.cs
+SpeechConfig speechConfig = SpeechConfig.FromSubscription(_options.Key, _options.Region);
+speechConfig.SpeechSynthesisVoiceName = _options.SpeechSynthesisVoiceName;
+_speechSynthesizer = new SpeechSynthesizer(speechConfig);
+await _speechSynthesizer.SpeakTextAsync(message);
+```
+
+# Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
