@@ -12,6 +12,7 @@ IHostBuilder builder = Host.CreateDefaultBuilder(args);
 
 builder.ConfigureLogging((context, builder) =>
 {
+    builder.ClearProviders();
     builder.AddSimpleConsole(options =>
     {
         options.SingleLine = false;

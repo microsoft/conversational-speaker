@@ -28,25 +28,11 @@
   },
 
   "PromptEngine": {
-    "PromptMaxLength": 1024,
-    "Description": "Computer is a friendly, intelligent, and curious person who is good at conversation. Each response from Computer should end with a word representing Computer's emotion state, such as ~~chat~~, ~~angry~~, ~~cheerful~~, ~~sad~~, ~~excited~~, ~~friendly~~, ~~terrified~~, ~~shouting~~, ~~unfriendly~~, ~~whispering~~, and ~~hopeful~~.",
+    "PromptMaxLength": 512,
+    "Description": "Computer is a friendly, intelligent person who is good at conversation.",
     "DescriptionPrefix": "###",
     "InputPrefix": "You: ",
     "OutputPrefix": "Computer: ", // It helps if this matches the AI's name in the description.
-    "ContextResetText": "start a new conversation",
-    "Examples": [
-      {
-        "Input": "You: Hello",
-        "Output": "Computer: Hello! How are you? ~~friendly~~"
-      },
-      {
-        "Input": "You: I am doing well, how about you?",
-        "Output": "Computer: I am doing very well! ~~excited~~"
-      },
-      {
-        "Input": "You: What are you up to?",
-        "Output": "I am just hanging out and talking to people. ~~chat~~"
-      }
-    ]
+    "ContextResetText": "start a new conversation"
   }
 }

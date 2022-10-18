@@ -40,49 +40,19 @@ namespace ConversationalSpeaker
         /// </summary>
         public async Task<string> ListenAsync(CancellationToken cancellationToken)
         {
-            string result = "";
-            TaskCompletionSource recognitionEnd = new TaskCompletionSource();
-
-            _speechRecognizer.Recognized += (object sender, SpeechRecognitionEventArgs e) =>
+            while (!cancellationToken.IsCancellationRequested) 
             {
-                if (ResultReason.RecognizedSpeech == e.Result.Reason &&
-                    !string.IsNullOrWhiteSpace(e.Result.Text))
-                {
-                    _logger.LogInformation($"Recognized: {e.Result.Text}");
-                    result = e.Result.Text;
-                    recognitionEnd.SetResult();
+                SpeechRecognitionResult result = await _speechRecognizer.RecognizeOnceAsync();
+                switch (result.Reason) {
+                    case ResultReason.RecognizedSpeech:
+                        _logger.LogInformation($"Recognized: {result.Text}");
+                        return result.Text;
+                    case ResultReason.Canceled:
+                        _logger.LogInformation($"Speech recognizer session canceled.");
+                        break;
                 }
-                else if (ResultReason.NoMatch == e.Result.Reason)
-                {
-                    _logger.LogWarning($"Speech could not be recognized.");
-                }
-            };
-
-            _speechRecognizer.Canceled += (object sender, SpeechRecognitionCanceledEventArgs e) =>
-            {
-                if (CancellationReason.Error == e.Reason)
-                {
-                    _logger.LogError($"{$"Error code: {(int)e.ErrorCode}, Error details: {e.ErrorDetails}"}");
-                }
-                else
-                {
-                    _logger.LogInformation($"Speech recognizer session canceled.");
-                }
-                recognitionEnd.SetCanceled();
-            };
-
-            _speechRecognizer.SessionStopped += (object sender, SessionEventArgs e) =>
-            {
-                _logger.LogInformation($"Stopped listening.");
-            };
-
-            await _speechRecognizer.StartContinuousRecognitionAsync().ConfigureAwait(false);
-            
-            Task.WaitAll(new[] { recognitionEnd.Task });
-            
-            await _speechRecognizer.StopContinuousRecognitionAsync().ConfigureAwait(false);
-            
-            return result;
+            } 
+            return string.Empty;
         }
 
         /// <inheritdoc/>
