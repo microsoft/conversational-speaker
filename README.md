@@ -1,4 +1,7 @@
 # Conversational Speaker
+
+**I was a bit confused at first reading this, because I thought I was still on the first tutorial.  It's not clear this is a different tutorial.  Suggest updating tital from Conversational Speaker to `Conversational Speaker Part2: Wake Word` to differentiate at the very beginning. Also, perhaps preface the repeated material as "already covered" in part 1 and make it collapsable?  It not immediately apparent what is the new material in this tutorial, which requires some scrolling to discover."
+
 The Conversational Speaker, informally known as "Friend Bot", uses a Raspberry Pi to enable a spoken conversation with OpenAI large language models. This implementation listens to speech, processes the conversation through the OpenAI service, and responds back.
 
 For more information on the prompt engine used for maintaining conversation context, go here: [python](https://github.com/microsoft/prompt-engine-py), [typescript](https://github.com/microsoft/prompt-engine), [dotnet](https://github.com/microsoft/prompt-engine-dotnet).
@@ -132,6 +135,9 @@ There are several ways to run a program when the Raspberry Pi boots. Below is my
    ```bash
    reboot
    ```
+
+**If this wake word step, and the code below is the only main different between the two tutorials, I would highlight this section at the beginning and simply reference Part 1 for people to refer back to.**
+
 ## 3. (Optional) Create a custom wake word
 The code base has a default wake word (i.e. "Hey, Computer.") already, which I suggest you use first. If you want to create your own (free!) custom wake word, then follow the steps below.
   1. Create a custom keyword model using the directions here: https://aka.ms/hackster/microsoft/wakeword. 
