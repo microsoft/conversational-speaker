@@ -13,14 +13,14 @@ This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Wind
 
 **Cost**: 
  - Hardware
-   - $ for [Raspberry PI 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b)
-   - $ for [USB Omnidirectional Speakerphone](https://www.amazon.com/dp/B08THGFBTV)
+   - $ for [Raspberry PI 4 Model B](https://aka.ms/maker/rpi/four)
+   - $ for [USB Omnidirectional Speakerphone](https://aka.ms/maker/usbspeakerphone)
    - $ for an SD card (to setup the Raspberry Pi OS)
 - Software
-  - [Azure Cognitive Speech Services](https://azure.microsoft.com/pricing/details/cognitive-services/speech-services)
-    - **Free tier**: 5 audio hours per month and 1 concurrent request. **I don't understand what you mean by 1 concurrent request**
+  - [Azure Cognitive Speech Services](https://aka.ms/maker/azcog/speech)
+    - **Free tier**: 5 audio hours per month and 1 concurrent request. 
     - **Free $200 credit**: With a new Azure account that can be used during the first 30 days.
-  - [OpenAI](https://openai.com/api/pricing/)
+  - [OpenAI](https://aka.ms/maker/openai/pricing)
     - **$0.02 / ~750 words**: Davinci models (most powerful).
     - **$0.002 / ~750 words**: Curie models (still pretty good with faster response time). 
     - **Free $18 credit**: With a new OpenAI account that can be used during your first 90 days.
@@ -30,10 +30,10 @@ This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Wind
 You will need an instance of Azure Cognitive Services and an OpenAI account. You can run the software on nearly any platform, but let's start with a Raspberry Pi.
 
 ## Raspberry Pi
-_If you are new to Raspberry Pis, check out this [getting started](https://projects.raspberrypi.org/en/projects/raspberry-pi-getting-started) guide._
+_If you are new to Raspberry Pis, check out this [getting started](https://aka.ms/maker/rpi/gettingstarted) guide._
 ### 1. OS
 1. Insert an SD card into your PC.
-1. Go to https://www.raspberrypi.com/software/ then download and run the Raspberry Pi Imager. **Did you want real links here? and in other places below?**
+1. Go to https://aka.ms/maker/rpi/software then download and run the Raspberry Pi Imager. 
 1. Click `Choose OS` and select the default Raspberry Pi OS (32-bit).
 1. Click `Choose Storage`, select the SD card.
 1. Click `Write` and wait for the imaging to complete.
@@ -42,21 +42,21 @@ _If you are new to Raspberry Pis, check out this [getting started](https://proje
 
 ### 2. USB Speaker/Microphone
 1. Plug in the USB speaker/microphone if you have not already.
-1. Right-click on the volume icon in the top-right of the screen and make sure the USB device is selected. **What screen is this referring to? Will it be intuitive to the reader?**
+1. On the Raspberry PI OS desktop, right-click on the volume icon in the top-right of the screen and make sure the USB device is selected.
 1. Right-click on the microphone icon in the top-right of the screen and make sure the USB device is selected.
 
 ## Azure
 The conversational speaker uses Azure Cognitive Service for speech-to-text and text-to-speech. Below are the steps to create an Azure account and an instance of Azure Cognitive Services.
 ### 1. Azure Account
-  1. In a web browser, navigate to http://www.azure.com and click on `Try Azure for Free`.
+  1. In a web browser, navigate to https://aka.ms/maker/azure and click on `Try Azure for Free`.
   1. Click on `Start Free` to start creating a free Azure account.
   1. Sign in with your Microsoft or GitHub account.
   1. After signing in, you will be prompted to enter some information.
         > NOTE: Even though this is a free account, Azure still requires credit card information. You will not be charged unless you change settings later.
-  1. After your account setup is complete, navigate to https://portal.azure.com.
+  1. After your account setup is complete, navigate to https://aka.ms/maker/azure/portal.
 
 ### 2. Azure Cognitive Services
-  1. Sign into your account at https://portal.azure.com.
+  1. Sign into your account at https://aka.ms/maker/azure/portal.
   1. In the search bar at the top, enter `Cognitive Services`. Under `Marketplace` select `Cognitive Services`. (It may take a few seconds to populate.)
   1. Verify the correct subscription is selected. Under `Resource Group` select `Create New`. Enter a resource group name (e.g. `conv-speak-rg`).
   1. Select a region and a name for your instance of Azure Cognitive Services (e.g. `my-conv-speak-cog-001`). 
@@ -69,14 +69,14 @@ The conversational speaker uses Azure Cognitive Service for speech-to-text and t
 ## OpenAI
 The conversational speaker uses OpenAI's models to hold a friendly conversation. Below are the steps to create a new account and access the AI models.
 ### 1. OpenAI Account
-  1. In a web browser, navigate to https://openai.com/api/. Click `Sign up`.
+  1. In a web browser, navigate to https://aka.ms/maker/openai. Click `Sign up`.
         > NOTE: can use a Google account, Microsoft account, or email to create a new account.
   1. Complete the sign-up process (e.g., create a password, verify your email, etc.).
         > NOTE: If you are new to OpenAI, please review the usage guidelines (https://beta.openai.com/docs/usage-guidelines).
   1. In the top-right corner click on your account. Click on `View API keys`.
   1. Click `+ Create new secret key`. Copy the generated key and save it in a secure location for later.
 
-  _If you are curious to play with the large language models directly, check out the `Playground` at the top of the page._  **What/which page?**
+  _If you are curious to play with the large language models directly, check out the `Playground` at the top of the page after logging in to https://aka.ms/maker/openai._
 
 # The Code
 ## 1. Code Configuration
@@ -96,7 +96,7 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
      ```bash
      dotnet --version
      ```
-   - For Windows, go to https://dotnet.microsoft.com/download, click `Download .NET SDK x64`, and run the installer.
+   - For Windows, go to https://aka.ms/maker/dotnet/download, click `Download .NET SDK x64`, and run the installer.
 1. Clone the repo.
    ```bash
    git clone --recursive --branch hackster-tutorial-1 https://github.com/microsoft/conversational-speaker.git
@@ -161,7 +161,7 @@ while (!cancellationToken.IsCancellationRequested)
 ```
 
 ## Listening
-To listen to the user, the application leverages Azure Cognitive Service's [speech-to-text feature](https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/speech-to-text). The feature supports many languages and configurations. This project's default language is english (`en-US`) and uses the default system microphone.
+To listen to the user, the application leverages Azure Cognitive Service's [speech-to-text feature](https://aka.ms/maker/azcog/speechtotext). The feature supports many languages and configurations. This project's default language is english (`en-US`) and uses the default system microphone.
 ```C#
 // AzCognitiveServicesListener.cs
 // Configure the connection to Azure.
@@ -192,7 +192,7 @@ Computer: Hello! I am doing very well. How about yourself?
 Human: I am doing well!
 Computer:
 ```
-In this way, the AI builds a simple history for itself by having the prompt engine remember previous interactions and send them back to the AI in subsequent interactions. Check out `PromptEngineHandler.cs` for how the interactions are processed and call into OpenAI. For more information on prompt design, check out https://beta.openai.com/docs/guides/completion/prompt-design.
+In this way, the AI builds a simple history for itself by having the prompt engine remember previous interactions and send them back to the AI in subsequent interactions. Check out `PromptEngineHandler.cs` for how the interactions are processed and call into OpenAI. For more information on prompt design, check out https://aka.ms/maker/openai/promptdesign.
 
 ## Speaking
 And last, but not least, the AI needs a voice! 
