@@ -1,4 +1,7 @@
 # Conversational Speaker
+
+**Same suggestion as for tutorial 2.  I can't initially tell this is a different tutorial from the others.  Perhaps a more specific title would help.  ALso all repeated material (setup, basic interaction instructions) could be left in tutorial 1, so these add on tutorials only focus on the new functionality.  I would reference tutorial 1 as the place to begin (and then there is less material to maintain :) )**
+
 The Conversational Speaker, informally known as "Friend Bot", uses a Raspberry Pi to enable a spoken conversation with OpenAI large language models. This implementation listens to speech, processes the conversation through the OpenAI service, and responds back.
 
 For more information on the prompt engine used for maintaining conversation context, go here: [python](https://github.com/microsoft/prompt-engine-py), [typescript](https://github.com/microsoft/prompt-engine), [dotnet](https://github.com/microsoft/prompt-engine-dotnet).
@@ -144,6 +147,9 @@ The code base has a default wake word (i.e. "Hey, Computer.") already, which I s
   - Change the AI's personality (`PromptEngine:Description`)
   - Switch to text input by changing the `System:TextListener` to `true` (good for testing changes).
 - The current state of the prompt engine usually remains stable for short conversations. Sometimes during longer conversations, though, the AI may start responding with not only its own response but what it thinks you might say next.
+
+**This is pretty hidden for the user to find it as the main differentiator of the three tutorials.  I would just focus on this and remove the other material that has already been covered in tutorial 1 and 2**
+
 - Take a look at Azure Cognitive Service's [style support page](https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=stt-tts#voice-styles-and-roles) to see which languages support which emotional styles, then play with the `AzureCognitiveServices:SpeechSynthesisVoiceName` and `PromptEngine` settings in `src/ConverstationalSpeaker/configuration.json`.
 
 # How It Works
@@ -188,6 +194,8 @@ speechConfig.SetProperty(PropertyId.SpeechServiceResponse_PostProcessingOption, 
 _audioConfig = AudioConfig.FromDefaultMicrophoneInput();
 _speechRecognizer = new SpeechRecognizer(speechConfig, _audioConfig);
 ```
+
+**This I would keep, as it shows the updated conversation prompting that is occurring**
 
 ## AI
 To enable the conversation part, we send the user's spoken text into an OpenAI GPT-3 large language model with a little help from a prompt engine. The prompt engine remembers a description of the AI, tracks previous inputs and responses, and adds any new responses to future interactions. Since we want the AI to add emotion/style cues, we seed the prompt with a few example interactions to teach it how to respond. The double-tilda bracketed cues give our application something that is easy to parse and forward to our text-to-speech API.
