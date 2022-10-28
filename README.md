@@ -68,6 +68,8 @@ The conversational speaker uses Azure Cognitive Service for speech-to-text and t
   1. On the left side navigation bar, under `Resourse Management`, select `Keys and Endpoint`.
   1. Copy either of the two Cognitive Services keys. Save this key in a secure location for later.
 
+  > Windows 11 users: If the application is stalling when calling the text-to-speech API, make sure you have applied all current security updates ([link](https://learn.microsoft.com/en-us/windows/release-health/resolved-issues-windows-11-22h2#2924msgdesc)).
+
 ## OpenAI
 The conversational speaker uses OpenAI's models to hold a friendly conversation. Below are the steps to create a new account and access the AI models.
 ### 1. OpenAI Account
