@@ -1,5 +1,3 @@
-_This is part three of three part series with an updated section on [Speaking](#speaking) below. You can find the first in the series at https://github.com/microsoft/conversational-speaker/tree/hackster-tutorial-1._
-
 # Conversational Speaker
 The Conversational Speaker, a.k.a. "Friend Bot", uses a Raspberry Pi to enable spoken conversation with OpenAI large language models. This implementation listens to speech, processes the conversation through the OpenAI service, and responds back.
 
