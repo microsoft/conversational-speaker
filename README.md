@@ -88,7 +88,7 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
 1. Install .NET 6 SDK.
    - For Raspberry Pi and Linux:
      ```bash
-     curl -sSL https://dot.net/v1/dotnet-install.sh | bash
+     curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 6.0
      ``` 
      After installation is complete (it may take a few minutes), add dotnet to the command search paths.
      ```bash
@@ -100,7 +100,7 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
      ```bash
      dotnet --version
      ```
-   - For Windows, go to https://aka.ms/maker/dotnet/download, click `Download .NET SDK x64`, and run the installer.
+   - For Windows, go to https://aka.ms/maker/dotnet/download, under .NET 6.0 click `Download .NET SDK x64`, and run the installer.
 1. Clone the repo.
    ```bash
    git clone --recursive --branch hackster-tutorial-3 https://github.com/microsoft/conversational-speaker.git
