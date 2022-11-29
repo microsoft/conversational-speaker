@@ -13,7 +13,8 @@
     "Region": "", // dotnet user-secrets set "AzureCognitiveServices:Region" "****"
     "SpeechRecognitionLanguage": "en-US",
     // For a list of available voices, see: https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=stt-tts#text-to-speech
-    "SpeechSynthesisVoiceName": "en-US-JennyNeural"
+    "SpeechSynthesisVoiceName": "en-US-JennyNeural",
+    "EnableSpeechStyle": "false"
   },
 
   "OpenAI": {

@@ -47,8 +47,12 @@ namespace ConversationalSpeaker
                 {
                     _logger.LogInformation($"Speaking ({style}): {message}");
                 }
+
+                string ssml = GenerateSsml(
+                    message,
+                    _options.EnableSpeechStyle ? style : string.Empty, 
+                    _options.SpeechSynthesisVoiceName);
                 
-                string ssml = GenerateSsml(message, style, _options.SpeechSynthesisVoiceName);
                 _logger.LogDebug(ssml);
                 await _speechSynthesizer.SpeakSsmlAsync(ssml);
             }
