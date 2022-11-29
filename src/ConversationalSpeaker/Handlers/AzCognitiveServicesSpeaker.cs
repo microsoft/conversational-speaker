@@ -39,8 +39,14 @@ namespace ConversationalSpeaker
             {
                 // Parse speaking style, if any
                 message = ExtractStyle(message, out string style);
-                _logger.LogInformation($"Style: {style}");
-                _logger.LogInformation($"Speaking: {message}");
+                if (string.IsNullOrWhiteSpace(style))
+                {
+                    _logger.LogInformation($"Speaking (none): {message}");
+                }
+                else
+                {
+                    _logger.LogInformation($"Speaking ({style}): {message}");
+                }
                 
                 string ssml = GenerateSsml(message, style, _options.SpeechSynthesisVoiceName);
                 _logger.LogDebug(ssml);

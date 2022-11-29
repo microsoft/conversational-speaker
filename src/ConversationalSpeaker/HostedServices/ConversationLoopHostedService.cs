@@ -51,7 +51,6 @@ namespace ConversationalSpeaker
             while (!cancellationToken.IsCancellationRequested)
             {
                 // Wait for wake word or phrase
-                _logger.LogInformation("Waiting for wake word...");
                 if (!await _wakeWordListener.WaitForWakeWordAsync(cancellationToken))
                 {
                     continue;
