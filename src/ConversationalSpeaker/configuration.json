@@ -13,7 +13,8 @@
     "Region": "", // dotnet user-secrets set "AzureCognitiveServices:Region" "****"
     "SpeechRecognitionLanguage": "en-US",
     // For a list of available voices, see: https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=stt-tts#text-to-speech
-    "SpeechSynthesisVoiceName": "en-US-JennyNeural"
+    "SpeechSynthesisVoiceName": "en-US-JennyNeural",
+    "EnableSpeechStyle": "false"
   },
 
   "OpenAI": {
@@ -23,8 +24,8 @@
     "TopP": 1, // 0.0 - 1.0
     "FrequencyPenalty": 0, // 0.0 - 2.0
     "PresencePenalty": 0, // 0.0 - 2.0
-    // For a list of available models, see https://github.com/betalgo/openai/blob/master/OpenAI.SDK/ObjectModels/Models.cs
-    "Model": "TextDavinciV2"
+    // For a list of available models, see https://beta.openai.com/docs/models/overview
+    "Model": "text-davinci-003"
   },
 
   "PromptEngine": {

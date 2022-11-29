@@ -140,13 +140,11 @@ There are several ways to run a program when the Raspberry Pi boots. Below is a 
 - To set context, the following phrase is recommended: "Hello, my name is \<your name\> and I live in \<your location\>."
 - Continue conversing!
     > NOTE: The current state of the prompt engine usually remains stable for short conversations. Sometimes during longer conversations, the AI may start responding with what it thinks you might say next.
-
 - For more usage settings, view `~/conversational-speaker/src/ConversationalSpeaker/configuration.json`. 
   - Change the AI's name (`PromptEngine:OutputPrefix`), 
   - Change the AI's voice (`AzureCognitiveServices:SpeechSynthesisVoiceName`)
   - Change the AI's personality (`PromptEngine:Description`)
   - Switch to text input by changing the `System:TextListener` to `true` (good for testing changes).
-
 
 # How it works
 ## Primary logic
