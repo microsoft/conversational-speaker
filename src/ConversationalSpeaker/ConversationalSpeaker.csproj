@@ -46,6 +46,9 @@
     <None Update="Handlers\wake-word-models\hey-jerry.model.table">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Handlers\WakeWordModel.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

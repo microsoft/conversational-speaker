@@ -41,6 +41,7 @@ namespace ConversationalSpeaker
         {
             while (!cancellationToken.IsCancellationRequested) 
             {
+                _logger.LogInformation("Listening...");
                 SpeechRecognitionResult result = await _speechRecognizer.RecognizeOnceAsync();
                 switch (result.Reason) {
                     case ResultReason.RecognizedSpeech:
