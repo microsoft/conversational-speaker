@@ -28,11 +28,10 @@ namespace ConversationalSpeaker
 
             SpeechConfig speechConfig = SpeechConfig.FromSubscription(_options.Key, _options.Region);
             speechConfig.SpeechRecognitionLanguage = _options.SpeechRecognitionLanguage;
+            speechConfig.SetProperty(PropertyId.SpeechServiceResponse_PostProcessingOption, "TrueText");
 
             _audioConfig = AudioConfig.FromDefaultMicrophoneInput();
             _speechRecognizer = new SpeechRecognizer(speechConfig, _audioConfig);
-
-            speechConfig.SetProperty(PropertyId.SpeechServiceResponse_PostProcessingOption, "2");
         }
 
         /// <summary>
@@ -42,6 +41,7 @@ namespace ConversationalSpeaker
         {
             while (!cancellationToken.IsCancellationRequested) 
             {
+                _logger.LogInformation("Listening...");
                 SpeechRecognitionResult result = await _speechRecognizer.RecognizeOnceAsync();
                 switch (result.Reason) {
                     case ResultReason.RecognizedSpeech:

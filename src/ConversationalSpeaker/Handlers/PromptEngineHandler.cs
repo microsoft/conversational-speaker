@@ -1,11 +1,13 @@
-﻿using Microsoft.AI.PromptEngine;
+﻿using ConversationalSpeaker.Handlers.OpenAiModels;
+using Microsoft.AI.PromptEngine;
 using Microsoft.AI.PromptEngine.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OpenAI.GPT3.Interfaces;
-using OpenAI.GPT3.ObjectModels;
-using OpenAI.GPT3.ObjectModels.RequestModels;
-using OpenAI.GPT3.ObjectModels.ResponseModels;
+using Newtonsoft.Json;
+using System.Linq.Expressions;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace ConversationalSpeaker
 {
@@ -20,13 +22,9 @@ namespace ConversationalSpeaker
     {
         private readonly OpenAiServiceOptions _openAiServiceOptions;
         private readonly Settings _promptEngineOptions;
-        private readonly IOpenAIService _openAIService;
         private readonly ILogger _logger;
-        
-        
+
         private readonly List<Interaction> _promptEngineInteractions = new List<Interaction>();
-        
-        private readonly Models.Model _model;
         private readonly GenericEngine _promptEngine;
 
         /// <summary>
@@ -35,19 +33,12 @@ namespace ConversationalSpeaker
         public PromptEngineHandler(
             IOptions<OpenAiServiceOptions> openAiServiceOptions,
             IOptions<Settings> promptEngineSettings,
-            IOpenAIService openAIService,
             ILogger<PromptEngineHandler> logger)
         {
             _logger = logger;
-            _openAIService = openAIService;
             _openAiServiceOptions = openAiServiceOptions.Value;
             _openAiServiceOptions.Validate();
             _promptEngineOptions = promptEngineSettings.Value;
-
-            if (!Enum.TryParse<Models.Model>(_openAiServiceOptions.Model, true, out _model))
-            {
-                throw new ArgumentException("Invalid model.", nameof(_openAiServiceOptions.Model));
-            }
 
             _promptEngine = new GenericEngine(_promptEngineOptions);
         }
@@ -69,44 +60,52 @@ namespace ConversationalSpeaker
             }
 
             IPrompt prompt = _promptEngine.Render(input);
-            
+
             _logger.LogDebug($"Prompt:{Environment.NewLine}{prompt.ToString()}");
 
-            // Send the conversation to GPT-3
-            CompletionCreateResponse completionResult = await _openAIService.Completions.Create(
-                new CompletionCreateRequest()
-                {
-                    Prompt = prompt.ToString(),
-                    MaxTokens = _openAiServiceOptions.MaxTokens,
-                    Temperature = _openAiServiceOptions.Temperature,
-                    TopP = _openAiServiceOptions.TopP,
-                    FrequencyPenalty = _openAiServiceOptions.FrequencyPenalty,
-                    PresencePenalty = _openAiServiceOptions.PresencePenalty
-                }, _model);
-
-            if (completionResult.Successful)
+            OpenAiCompletionRequest completionRequest = new OpenAiCompletionRequest()
             {
-                string responseMessage = completionResult.Choices.FirstOrDefault().Text.Trim();
+                prompt = prompt.ToString(),
+                model = _openAiServiceOptions.Model,
+                max_tokens = _openAiServiceOptions.MaxTokens,
+                temperature = _openAiServiceOptions.Temperature,
+                top_p = _openAiServiceOptions.TopP,
+                frequency_penalty = _openAiServiceOptions.FrequencyPenalty,
+                presence_penalty = _openAiServiceOptions.PresencePenalty,
+                stream = false,
+                stop = "\n",
+                n = 1
+            };
+            
+            using HttpRequestMessage request = new HttpRequestMessage()
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri("https://api.openai.com/v1/completions"),
+                Content = JsonContent.Create(completionRequest, MediaTypeHeaderValue.Parse("application/json"))
+            };
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _openAiServiceOptions.Key);
 
+            using HttpClient httpClient = new HttpClient();
+            HttpResponseMessage response = await httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"OpenAI GPT3 returned an error. {response.StatusCode}: {response.ReasonPhrase}");
+                _logger.LogError(await response.Content.ReadAsStringAsync());
+                return "OpenAI GPT3 returned an error. Please try again.";
+            }
+
+            OpenAiCompletionResponse responseContent = await response.Content.ReadFromJsonAsync<OpenAiCompletionResponse>();
+            string responseMessage = responseContent.choices.FirstOrDefault()?.text?.Trim();
+
+            if (!string.IsNullOrWhiteSpace(responseMessage))
+            {
                 // Add the interaction as an example for future interactions. This helps the AI keep context of the conversation.
                 _promptEngineInteractions.Add(new Interaction() { Input = input, Output = responseMessage });
                 _promptEngineOptions.Examples = _promptEngineInteractions.ToArray();
-                
-                return responseMessage;
             }
-            else
-            {
-                string errorMessage = "OpenAI GPT3 returned an error.";
-                if (completionResult.Error != null)
-                {
-                    _logger.LogError($"{errorMessage} {completionResult.Error.Code}: {completionResult.Error.Message}");
-                }
-                else
-                {
-                    _logger.LogError(errorMessage);
-                }
-                return errorMessage;
-            }
+            
+            return responseMessage;
         }
     }
 }
+  

@@ -51,7 +51,6 @@ namespace ConversationalSpeaker
             while (!cancellationToken.IsCancellationRequested)
             {
                 // Wait for wake word or phrase
-                _logger.LogInformation("Waiting for wake word...");
                 if (!await _wakeWordListener.WaitForWakeWordAsync(cancellationToken))
                 {
                     continue;
@@ -64,7 +63,6 @@ namespace ConversationalSpeaker
                 bool keepListening = true;
                 while (keepListening && !cancellationToken.IsCancellationRequested)
                 {
-                    _logger.LogInformation("Listening...");
                     string userMessage = await _listener.ListenAsync(cancellationToken);
 
                     // User said "goodbye" - stop listening
@@ -100,7 +98,6 @@ namespace ConversationalSpeaker
         public virtual void Dispose()
         {
             _cancelToken.Dispose();
-            _wakeWordListener.Dispose();
             _listener.Dispose();
             _speaker.Dispose();
         }

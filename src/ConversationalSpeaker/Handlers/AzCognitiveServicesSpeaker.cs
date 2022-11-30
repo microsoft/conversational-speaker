@@ -14,8 +14,6 @@ namespace ConversationalSpeaker
         private readonly ILogger<AzCognitiveServicesSpeaker> _logger;
         private readonly SpeechSynthesizer _speechSynthesizer;
 
-        private static readonly Regex _styleRegex = new Regex(@"(~~(.+)~~)");
-
         public AzCognitiveServicesSpeaker(
             IOptions<AzureCognitiveServicesOptions> options,
             ILogger<AzCognitiveServicesSpeaker> logger)
@@ -38,13 +36,8 @@ namespace ConversationalSpeaker
             if (!string.IsNullOrWhiteSpace(message))
             {
                 // Parse speaking style, if any
-                message = ExtractStyle(message, out string style);
-                _logger.LogInformation($"Style: {style}");
                 _logger.LogInformation($"Speaking: {message}");
-                
-                string ssml = GenerateSsml(message, style, _options.SpeechSynthesisVoiceName);
-                _logger.LogDebug(ssml);
-                await _speechSynthesizer.SpeakSsmlAsync(ssml);
+                await _speechSynthesizer.SpeakTextAsync(message);
             }
         }
 
@@ -53,26 +46,5 @@ namespace ConversationalSpeaker
         {
             _speechSynthesizer.Dispose();
         }
-
-        private string ExtractStyle(string message, out string style)
-        {
-            style = string.Empty;
-            Match match = _styleRegex.Match(message);
-            if (match.Success)
-            {
-                style = match.Groups[2].Value.Trim();
-                message = message.Replace(match.Groups[1].Value, string.Empty).Trim();
-            }
-            return message;
-        }
-
-        private string GenerateSsml(string message, string style, string voiceName)
-            => "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:mstts=\"https://www.w3.org/2001/mstts\" xml:lang=\"en-US\">" + 
-                $"<voice name=\"{voiceName}\">" + 
-                    $"<mstts:express-as style=\"{style}\">" + 
-                        $"{message}" + 
-                    "</mstts:express-as>" + 
-                    "</voice>" + 
-                "</speak>";
     }
 }
