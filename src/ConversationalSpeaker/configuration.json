@@ -11,9 +11,8 @@
   "AzureCognitiveServices": {
     "Key": "", // dotnet user-secrets set "AzureCognitiveServices:Key" "****"
     "Region": "", // dotnet user-secrets set "AzureCognitiveServices:Region" "****"
-    "SpeechRecognitionLanguage": "en-US",
-    // For a list of available voices, see: https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=stt-tts#text-to-speech
-    "SpeechSynthesisVoiceName": "en-US-JennyNeural"
+    "SpeechRecognitionLanguage": "en-US", // For a list of supported languages, see https://aka.ms/maker/azcog/speechtotext
+    "SpeechSynthesisVoiceName": "en-US-JennyNeural" // For a list of available voices, see https://aka.ms/maker/friendbot/voicenames
   },
 
   "OpenAI": {
@@ -23,12 +22,11 @@
     "TopP": 1, // 0.0 - 1.0
     "FrequencyPenalty": 0, // 0.0 - 2.0
     "PresencePenalty": 0, // 0.0 - 2.0
-    // For a list of available models, see https://github.com/betalgo/openai/blob/master/OpenAI.SDK/ObjectModels/Models.cs
-    "Model": "TextDavinciV2"
+    "Model": "text-davinci-003" // For a list of available models, see https://beta.openai.com/docs/models/overview
   },
 
   "PromptEngine": {
-    "PromptMaxLength": 512,
+    "PromptMaxLength": 1500,
     "Description": "Computer is a friendly, intelligent person who is good at conversation.",
     "DescriptionPrefix": "###",
     "InputPrefix": "You: ",

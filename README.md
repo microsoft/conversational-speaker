@@ -3,7 +3,7 @@ _This is part two of three part series with the new sections being [Create a cus
 # Conversational Speaker
 The Conversational Speaker, a.k.a. "Friend Bot", uses a Raspberry Pi to enable spoken conversation with OpenAI large language models. This implementation listens to speech, processes the conversation through the OpenAI service, and responds back.
 
-The conversation's context is maintained using a _prompt engine_. Microsoft supports a series of separate prompt engines written for [python](https://github.com/microsoft/prompt-engine-py), [typescript](https://github.com/microsoft/prompt-engine), and [dotnet](https://github.com/microsoft/prompt-engine-dotnet). For more information about _prompt design_, checkout [OpenAI's documentation](https://aka.ms/maker/openai/promptdesign).
+The conversation's context is maintained using a _prompt engine_. Microsoft supports a series of separate prompt engines written for [python](https://github.com/microsoft/prompt-engine-py), [typescript](https://github.com/microsoft/prompt-engine), and [dotnet](https://github.com/microsoft/prompt-engine-dotnet). For more information about _prompt design_, checkout [OpenAI's documentation](https://beta.openai.com/docs/guides/completion/prompt-design).
 
 This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Windows.
 
@@ -34,7 +34,7 @@ You will need an instance of Azure Cognitive Services and an OpenAI account. You
 ## Raspberry Pi
 _If you are new to Raspberry Pis, check out this [getting started](https://aka.ms/maker/rpi/gettingstarted) guide._
 ### 1. OS
-1. Insert an SD card into your PC.
+1. Insert a micro SD card into your PC.
 1. Go to https://aka.ms/maker/rpi/software then download and run the Raspberry Pi Imager. 
 1. Click `Choose OS` and select the default Raspberry Pi OS (32-bit).
 1. Click `Choose Storage`, select the SD card.
@@ -146,13 +146,11 @@ The code base has a default wake word (i.e. "Hey, Computer.") already, which I s
 - To set context, the following phrase is recommended: "Hello, my name is \<your name\> and I live in \<your location\>."
 - Continue conversing!
     > NOTE: The current state of the prompt engine usually remains stable for short conversations. Sometimes during longer conversations, the AI may start responding with what it thinks you might say next.
-
 - For more usage settings, view `~/conversational-speaker/src/ConversationalSpeaker/configuration.json`. 
   - Change the AI's name (`PromptEngine:OutputPrefix`), 
   - Change the AI's voice (`AzureCognitiveServices:SpeechSynthesisVoiceName`)
   - Change the AI's personality (`PromptEngine:Description`)
   - Switch to text input by changing the `System:TextListener` to `true` (good for testing changes).
-
 
 # How it works
 ## Primary logic

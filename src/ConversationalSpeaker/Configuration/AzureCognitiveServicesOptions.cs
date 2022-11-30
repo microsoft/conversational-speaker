@@ -27,7 +27,7 @@
         /// https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=stt-tts#text-to-speech
         /// </remarks>
         public string SpeechSynthesisVoiceName { get; set; }
-
+        
         /// <summary>
         /// Validate options, throw an exception is any are invalid.
         /// </summary>

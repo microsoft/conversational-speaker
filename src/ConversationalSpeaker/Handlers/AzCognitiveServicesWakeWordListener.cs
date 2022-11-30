@@ -35,11 +35,13 @@ namespace ConversationalSpeaker
         /// </summary>
         public async Task<bool> WaitForWakeWordAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation($"Waiting for wake phrase...");
             KeywordRecognitionResult result;
             do
             {
                 result = await _keywordRecognizer.RecognizeOnceAsync(_keywordModel);
-                _logger.LogInformation($"{result.Reason}");
+                _logger.LogInformation("Wake phrase detected.");
+                _logger.LogDebug($"{result.Reason}");
             } while (result.Reason != ResultReason.RecognizedKeyword);
             return true;
         }

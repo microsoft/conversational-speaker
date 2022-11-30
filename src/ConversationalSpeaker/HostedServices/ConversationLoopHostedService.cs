@@ -8,7 +8,6 @@ namespace ConversationalSpeaker
     /// </summary>
     internal class ConversationLoopHostedService : IHostedService, IDisposable
     {
-        private readonly AzCognitiveServicesWakeWordListener _wakeWordListener;
         private readonly AzCognitiveServicesListener _listener;
         private readonly AzCognitiveServicesSpeaker _speaker;
         private readonly PromptEngineHandler _conversationHandler;
@@ -21,13 +20,11 @@ namespace ConversationalSpeaker
         /// Constructor
         /// </summary>
         public ConversationLoopHostedService(
-            AzCognitiveServicesWakeWordListener wakeWordListener,
             AzCognitiveServicesListener listener,
             AzCognitiveServicesSpeaker speaker,
             PromptEngineHandler conversationHandler,
             ILogger<ConversationLoopHostedService> logger)
         {
-            _wakeWordListener = wakeWordListener;
             _listener = listener;
             _speaker = speaker;
             _conversationHandler = conversationHandler;
@@ -48,41 +45,22 @@ namespace ConversationalSpeaker
         /// </summary>
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            // Say hello on startup
+            await _speaker.SpeakAsync("Hello!", cancellationToken);
+
             while (!cancellationToken.IsCancellationRequested)
             {
-                // Wait for wake word or phrase
-                _logger.LogInformation("Waiting for wake word...");
-                if (!await _wakeWordListener.WaitForWakeWordAsync(cancellationToken))
-                {
-                    continue;
-                }
-
-                // Say hello on startup
-                await _speaker.SpeakAsync("Hello!", cancellationToken);
-
                 // Start listening
-                bool keepListening = true;
-                while (keepListening && !cancellationToken.IsCancellationRequested)
+                _logger.LogInformation("Listening...");
+                string userMessage = await _listener.ListenAsync(cancellationToken);
+
+                // Run what the user said through the conversation handler (i.e. AI)
+                string response = await _conversationHandler.ProcessAsync(userMessage, cancellationToken);
+
+                // Speak the response from the AI, if any.
+                if (!string.IsNullOrWhiteSpace(response))
                 {
-                    _logger.LogInformation("Listening...");
-                    string userMessage = await _listener.ListenAsync(cancellationToken);
-
-                    // User said "goodbye" - stop listening
-                    if (userMessage.StartsWith("goodbye", StringComparison.OrdinalIgnoreCase))
-                    {
-                        await _speaker.SpeakAsync("Bye!", cancellationToken);
-                        keepListening = false;
-                        continue;
-                    }
-
-                    // Run what the user said through the conversation handler (i.e. AI)
-                    string response = await _conversationHandler.ProcessAsync(userMessage, cancellationToken);
-
-                    // Speak the response from the AI, if any.
-                    if (!string.IsNullOrWhiteSpace(response))
-                    {
-                        await _speaker.SpeakAsync(response, cancellationToken);
-                    }
+                    await _speaker.SpeakAsync(response, cancellationToken);
                 }
             }
         }
@@ -100,7 +78,6 @@ namespace ConversationalSpeaker
         public virtual void Dispose()
         {
             _cancelToken.Dispose();
-            _wakeWordListener.Dispose();
             _listener.Dispose();
             _speaker.Dispose();
         }
