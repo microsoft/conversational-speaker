@@ -18,10 +18,10 @@ builder.ConfigureLogging((context, loggingBuilder) =>
 });
 
 string configurationFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "configuration.json");
-    
+
 builder.ConfigureAppConfiguration((builder) => builder
     .AddJsonFile(configurationFilePath)
-    .AddEnvironmentVariables()  
+    .AddEnvironmentVariables()
     .AddUserSecrets<Program>());
 
 builder.ConfigureServices((context, services) =>
@@ -37,10 +37,10 @@ builder.ConfigureServices((context, services) =>
 
     // Add the listener
     services.AddSingleton<AzCognitiveServicesListener>();
-    
+
     // Add the speaker
     services.AddSingleton<AzCognitiveServicesSpeaker>();
-    
+
     // Add the conversation processor
     services.AddSingleton<PromptEngineHandler>();
 

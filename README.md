@@ -1,4 +1,4 @@
-_This is part two of three part series with the new sections being [Create a custom wake word](#3.-(optional)-create-a-custom-wake-word) and [Wake Word or Phrase](#wake-word-or-phrase) below. You can find the next in the series at https://github.com/microsoft/conversational-speaker/tree/hackster-tutorial-3._
+This is part three of three part series with an updated section on Speaking below. You can find the first in the series at https://github.com/microsoft/conversational-speaker/tree/hackster-tutorial-1.
 
 # Conversational Speaker
 The Conversational Speaker, a.k.a. "Friend Bot", uses a Raspberry Pi to enable spoken conversation with OpenAI large language models. This implementation listens to speech, processes the conversation through the OpenAI service, and responds back.
@@ -196,16 +196,34 @@ _speechRecognizer = new SpeechRecognizer(speechConfig, _audioConfig);
 ```
 
 ## AI
-To enable the conversation part, wthe user's spoken text is sent to an OpenAI GPT-3 large language model with a little help from a prompt engine. The prompt engine remembers a description of the AI, tracks previous inputs and responses, and adds any new responses to future interactions. For instance, here is a prompt that is sent to OpenAI if one were to first say "Hello. How are you?"
+To enable the conversation part, we send the user's spoken text into an OpenAI GPT-3 large language model with a little help from a prompt engine. The prompt engine remembers a description of the AI, tracks previous inputs and responses, and adds any new responses to future interactions. Since we want the AI to add emotion/style cues, we seed the prompt with a few example interactions to teach it how to respond. The double-tilda bracketed cues give our application something that is easy to parse and forward to our text-to-speech API.
 ```
-### Computer is a friendly, intelligent person who is good at conversation.
+### Computer is a friendly, intelligent, and curious person who is good at conversation. Each response from Computer should end with a word representing Computer's emotion state, such as ~~chat~~, ~~angry~~, ~~cheerful~~, ~~sad~~, ~~excited~~, ~~friendly~~, ~~terrified~~, ~~shouting~~, ~~unfriendly~~, ~~whispering~~, and ~~hopeful~~.
 
-Human: Hello. How are you?
-Computer:
+Human: Hello
+Computer: Hello! How are you? ~~friendly~~
+
+Human: I am doing well, how about you?
+Computer: I am doing very well! ~~excited~~
+
+Human: What are you up to?
+Computer: I am just hanging out and talking to people. ~~chat~~
 ```
-This prompt design is asking OpenAI to complete the prompt or, in other words, what would Computer say here? If OpenAI were to respond with something like "Hello! I am doing very well. How about yourself?", then the prompt engine would remember that response and make sure to include it in the next prompt:
+
+When when we talk to the AI, we send the hints above, along with other previous interactions, and the AI attempts to append appropriate cues to its responses.
+
+The prompt design is asking OpenAI to complete the prompt or, in other words, ask "what would Computer say here?" If we were to say "I am doing well!", the prompt engine would render prompt like the one below and ask OpenAI to complete it.
 ```
-### Computer is a friendly, intelligent person who is good at conversation.
+### Computer is a friendly, intelligent, and curious person who is good at conversation. Each response from Computer should end with a word representing Computer's emotion state, such as ~~chat~~, ~~angry~~, ~~cheerful~~, ~~sad~~, ~~excited~~, ~~friendly~~, ~~terrified~~, ~~shouting~~, ~~unfriendly~~, ~~whispering~~, and ~~hopeful~~.
+
+Human: Hello
+Computer: Hello! How are you? ~~friendly~~
+
+Human: I am doing well, how about you?
+Computer: I am doing very well! ~~excited~~
+
+Human: What are you up to?
+Computer: I am just hanging out and talking to people. ~~chat~~
 
 Human: Hello. How are you?
 Computer: Hello! I am doing very well. How about yourself?
@@ -213,16 +231,28 @@ Computer: Hello! I am doing very well. How about yourself?
 Human: I am doing well!
 Computer:
 ```
-In this way, the AI builds a simple history for itself by having the prompt engine remember previous interactions and send them back to the AI in subsequent interactions. Check out `PromptEngineHandler.cs` for how the interactions are processed and call into OpenAI. For more information on prompt design, check out https://aka.ms/maker/openai/promptdesign.
+With any luck, OpenAI will respond with something like `"That's great to hear! ~~excited~~"` and our prompt engine will that that response to the list of interactions.
+
+In this way, we have the AI build a simple history for itself by having our prompt engine remember previous interactions and send them back to the AI in subsequent interactions. Check out `PromptEngineHandler.cs` for how we process interactions and call into OpenAI. For more information on prompt design, check out https://aka.ms/maker/openai/promptdesign.
 
 ## Speaking
-And last, but not least, the AI needs a voice! 
+And last, but not least, we head back to Azure Cognitive Services for its text-to-speech feature to give a voice to our AI. Since we are parsing out a style cue from OpenAI, we'll need to use the text-to-speech's Speech Synthesis Markup Language (SSML) support.
 ```C#
 // AzCognitiveServicesSpeaker.cs
 SpeechConfig speechConfig = SpeechConfig.FromSubscription(_options.Key, _options.Region);
 speechConfig.SpeechSynthesisVoiceName = _options.SpeechSynthesisVoiceName;
 _speechSynthesizer = new SpeechSynthesizer(speechConfig);
-await _speechSynthesizer.SpeakTextAsync(message);
+message = ExtractStyle(message, out string style);
+string ssml = GenerateSsml(message, style, _options.SpeechSynthesisVoiceName);
+await _speechSynthesizer.SpeakSsmlAsync(ssml);
+```
+In the case of speaking `"That's great to hear! ~~excited~~"`, the SSML sent to Azure Cognitive Services would like like this: 
+```XML
+<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="en-US">
+  <voice name="en-US-JennyNeural">
+    <mstts:express-as style="excited">That's great to hear!</mstts:express-as>
+  </voice>
+</speak>
 ```
 
 # Contributing

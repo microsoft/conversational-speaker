@@ -3,11 +3,8 @@ using Microsoft.AI.PromptEngine;
 using Microsoft.AI.PromptEngine.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using System.Linq.Expressions;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace ConversationalSpeaker
 {
@@ -76,7 +73,7 @@ namespace ConversationalSpeaker
                 stop = "\n",
                 n = 1
             };
-            
+
             using HttpRequestMessage request = new HttpRequestMessage()
             {
                 Method = HttpMethod.Post,
@@ -103,9 +100,8 @@ namespace ConversationalSpeaker
                 _promptEngineInteractions.Add(new Interaction() { Input = input, Output = responseMessage });
                 _promptEngineOptions.Examples = _promptEngineInteractions.ToArray();
             }
-            
+
             return responseMessage;
         }
     }
 }
-  

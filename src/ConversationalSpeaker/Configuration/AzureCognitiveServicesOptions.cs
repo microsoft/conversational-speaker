@@ -27,7 +27,12 @@
         /// https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=stt-tts#text-to-speech
         /// </remarks>
         public string SpeechSynthesisVoiceName { get; set; }
-        
+
+        /// <summary>
+        /// True to enable style cues when speaking.
+        /// </summary>
+        public bool EnableSpeechStyle { get; set; }
+
         /// <summary>
         /// Validate options, throw an exception is any are invalid.
         /// </summary>
@@ -35,7 +40,7 @@
         {
             if (string.IsNullOrWhiteSpace(Region))
                 throw new ArgumentException("Argument is invalid.", nameof(Region));
-            
+
             if (string.IsNullOrWhiteSpace(Key))
                 throw new ArgumentException("Argument is invalid.", nameof(Key));
 
