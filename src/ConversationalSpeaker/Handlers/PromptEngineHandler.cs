@@ -63,23 +63,7 @@ namespace ConversationalSpeaker
 
             _logger.LogDebug($"Prompt:{Environment.NewLine}{prompt.ToString()}");
 
-<<<<<<< HEAD
-            // Send the conversation to GPT-3
-            CompletionCreateResponse completionResult = await _openAIService.Completions.Create(
-                new CompletionCreateRequest()
-                {
-                    Prompt = prompt.ToString(),
-                    MaxTokens = _openAiServiceOptions.MaxTokens,
-                    Temperature = _openAiServiceOptions.Temperature,
-                    TopP = _openAiServiceOptions.TopP,
-                    FrequencyPenalty = _openAiServiceOptions.FrequencyPenalty,
-                    PresencePenalty = _openAiServiceOptions.PresencePenalty
-                }, _model);
-
-            if (completionResult.Successful)
-=======
             OpenAiCompletionRequest completionRequest = new OpenAiCompletionRequest()
->>>>>>> main
             {
                 prompt = prompt.ToString(),
                 model = _openAiServiceOptions.Model,

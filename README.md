@@ -34,7 +34,7 @@ You will need an instance of Azure Cognitive Services and an OpenAI account. You
 ## Raspberry Pi
 _If you are new to Raspberry Pis, check out this [getting started](https://aka.ms/maker/rpi/gettingstarted) guide._
 ### 1. OS
-1. Insert an SD card into your PC.
+1. Insert a micro SD card into your PC.
 1. Go to https://aka.ms/maker/rpi/software then download and run the Raspberry Pi Imager. 
 1. Click `Choose OS` and select the default Raspberry Pi OS (32-bit).
 1. Click `Choose Storage`, select the SD card.
