@@ -136,7 +136,6 @@ There are several ways to run a program when the Raspberry Pi boots. Below is a 
    ```
 
 ## 3. Usage
-- To start a new conversation, say "Start a new conversation". 
 - To set context, the following phrase is recommended: "Hello, my name is \<your name\> and I live in \<your location\>."
 - Continue conversing!
     > NOTE: The current state of the prompt engine usually remains stable for short conversations. Sometimes during longer conversations, the AI may start responding with what it thinks you might say next.
