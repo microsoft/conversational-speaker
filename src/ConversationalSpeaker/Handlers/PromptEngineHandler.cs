@@ -3,11 +3,8 @@ using Microsoft.AI.PromptEngine;
 using Microsoft.AI.PromptEngine.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using System.Linq.Expressions;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace ConversationalSpeaker
 {
@@ -51,12 +48,6 @@ namespace ConversationalSpeaker
             if (string.IsNullOrWhiteSpace(input))
             {
                 return string.Empty;
-            }
-
-            if (input.StartsWith(_promptEngineOptions.ContextResetText, StringComparison.OrdinalIgnoreCase))
-            {
-                _promptEngineInteractions.Clear();
-                return "Okay, let's start a new conversation.";
             }
 
             IPrompt prompt = _promptEngine.Render(input);

@@ -1,8 +1,8 @@
-﻿using Microsoft.CognitiveServices.Speech.Audio;
-using Microsoft.CognitiveServices.Speech;
+﻿using Microsoft.CognitiveServices.Speech;
+using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using Microsoft.Extensions.Options;
+using System.Reflection;
 
 namespace ConversationalSpeaker
 {
