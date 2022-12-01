@@ -17,7 +17,7 @@ This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Wind
    - $ for [USB Omnidirectional Speakerphone](https://aka.ms/maker/usbspeakerphone)
    - $ for an SD card (to setup the Raspberry Pi OS)
 - Software
-  - [Azure Cognitive Speech Services](https://aka.ms/maker/azcog/speech)
+  - [Azure Cognitive Speech Services](https://aka.ms/friendbot/azurecog)
     - **Free tier**: 5 audio hours per month and 1 concurrent request. 
     - **Free $200 credit**: With a new Azure account that can be used during the first 30 days.
   - [OpenAI](https://aka.ms/maker/openai/pricing)
@@ -48,15 +48,15 @@ _If you are new to Raspberry Pis, check out this [getting started](https://aka.m
 ## Azure
 The conversational speaker uses Azure Cognitive Service for speech-to-text and text-to-speech. Below are the steps to create an Azure account and an instance of Azure Cognitive Services.
 ### 1. Azure Account
-  1. In a web browser, navigate to https://aka.ms/maker/azure and click on `Try Azure for Free`.
+  1. In a web browser, navigate to https://aka.ms/friendbot/azure and click on `Try Azure for Free`.
   1. Click on `Start Free` to start creating a free Azure account.
   1. Sign in with your Microsoft or GitHub account.
   1. After signing in, you will be prompted to enter some information.
         > NOTE: Even though this is a free account, Azure still requires credit card information. You will not be charged unless you change settings later.
-  1. After your account setup is complete, navigate to https://aka.ms/maker/azure/portal.
+  1. After your account setup is complete, navigate to https://aka.ms/friendbot/azureportal.
 
 ### 2. Azure Cognitive Services
-  1. Sign into your account at https://aka.ms/maker/azure/portal.
+  1. Sign into your account at https://aka.ms/friendbot/azureportal.
   1. In the search bar at the top, enter `Cognitive Services`. Under `Marketplace` select `Cognitive Services`. (It may take a few seconds to populate.)
   1. Verify the correct subscription is selected. Under `Resource Group` select `Create New`. Enter a resource group name (e.g. `conv-speak-rg`).
   1. Select a region and a name for your instance of Azure Cognitive Services (e.g. `my-conv-speak-cog-001`). 
@@ -181,7 +181,7 @@ do
 ```
 
 ## Listening
-To listen to the user, the application leverages Azure Cognitive Service's [speech-to-text feature](https://aka.ms/maker/azcog/speechtotext). The feature supports many languages and configurations. This project's default language is english (`en-US`) and uses the default system microphone.
+To listen to the user, the application leverages Azure Cognitive Service's [speech-to-text feature](https://aka.ms/friendbot/speech-to-text). The feature supports many languages and configurations. This project's default language is english (`en-US`) and uses the default system microphone.
 ```C#
 // AzCognitiveServicesListener.cs
 // Configure the connection to Azure.
