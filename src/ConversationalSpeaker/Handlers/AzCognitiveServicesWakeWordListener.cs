@@ -1,8 +1,8 @@
-﻿using Microsoft.CognitiveServices.Speech.Audio;
-using Microsoft.CognitiveServices.Speech;
+﻿using Microsoft.CognitiveServices.Speech;
+using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using Microsoft.Extensions.Options;
+using System.Reflection;
 
 namespace ConversationalSpeaker
 {
@@ -24,7 +24,7 @@ namespace ConversationalSpeaker
             _logger = logger;
             _options = options.Value;
 
-            string keywordModelPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Handlers/WakeWordModel.table");
+            string keywordModelPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Handlers", "WakePhrases", _options.WakePhraseModel);
             _keywordModel = KeywordRecognitionModel.FromFile(keywordModelPath);
             _audioConfig = AudioConfig.FromDefaultMicrophoneInput();
             _keywordRecognizer = new KeywordRecognizer(_audioConfig);
@@ -35,10 +35,10 @@ namespace ConversationalSpeaker
         /// </summary>
         public async Task<bool> WaitForWakeWordAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Waiting for wake phrase...");
             KeywordRecognitionResult result;
             do
             {
+                _logger.LogInformation($"Waiting for wake phrase...");
                 result = await _keywordRecognizer.RecognizeOnceAsync(_keywordModel);
                 _logger.LogInformation("Wake phrase detected.");
                 _logger.LogDebug($"{result.Reason}");
@@ -50,7 +50,6 @@ namespace ConversationalSpeaker
         public void Dispose()
         {
             _audioConfig.Dispose();
-            _keywordRecognizer.Dispose();
         }
     }
 }

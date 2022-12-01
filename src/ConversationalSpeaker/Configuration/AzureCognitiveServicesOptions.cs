@@ -6,7 +6,7 @@
     public class AzureCognitiveServicesOptions
     {
         /// <summary>
-        /// Location/region (e.g. WestUS3)
+        /// Location/region (e.g. EastUS)
         /// </summary>
         public string Region { get; set; }
 
@@ -32,6 +32,11 @@
         /// True to enable style cues when speaking.
         /// </summary>
         public bool EnableSpeechStyle { get; set; }
+
+        /// <summary>
+        /// Filename of the wake phrase model to use.
+        /// </summary>
+        public string WakePhraseModel { get; set; }
 
         /// <summary>
         /// Validate options, throw an exception is any are invalid.

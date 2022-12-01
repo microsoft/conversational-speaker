@@ -3,11 +3,8 @@ using Microsoft.AI.PromptEngine;
 using Microsoft.AI.PromptEngine.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using System.Linq.Expressions;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace ConversationalSpeaker
 {
@@ -24,9 +21,7 @@ namespace ConversationalSpeaker
         private readonly Settings _promptEngineOptions;
         private readonly ILogger _logger;
 
-
         private readonly List<Interaction> _promptEngineInteractions = new List<Interaction>();
-
         private readonly GenericEngine _promptEngine;
 
         /// <summary>
@@ -55,14 +50,7 @@ namespace ConversationalSpeaker
                 return string.Empty;
             }
 
-            if (input.StartsWith(_promptEngineOptions.ContextResetText, StringComparison.OrdinalIgnoreCase))
-            {
-                _promptEngineInteractions.Clear();
-                return "Okay, let's start a new conversation.";
-            }
-
             IPrompt prompt = _promptEngine.Render(input);
-
             _logger.LogDebug($"Prompt:{Environment.NewLine}{prompt.ToString()}");
 
             OpenAiCompletionRequest completionRequest = new OpenAiCompletionRequest()
@@ -74,8 +62,8 @@ namespace ConversationalSpeaker
                 top_p = _openAiServiceOptions.TopP,
                 frequency_penalty = _openAiServiceOptions.FrequencyPenalty,
                 presence_penalty = _openAiServiceOptions.PresencePenalty,
-                stream = false,
                 stop = "\n",
+                stream = false,
                 n = 1
             };
             
@@ -105,7 +93,7 @@ namespace ConversationalSpeaker
                 _promptEngineInteractions.Add(new Interaction() { Input = input, Output = responseMessage });
                 _promptEngineOptions.Examples = _promptEngineInteractions.ToArray();
             }
-            
+
             return responseMessage;
         }
     }

@@ -1,15 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConversationalSpeaker
 {
+    /// <summary>
+    /// A color-coded single-line per message console log formatter.
+    /// </summary>
     internal class CleanConsoleFormatter : ConsoleFormatter
     {
         const string DefaultForegroundColor = "\x1B[39m\x1B[22m";

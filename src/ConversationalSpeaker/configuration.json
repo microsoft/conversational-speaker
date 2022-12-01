@@ -12,9 +12,9 @@
     "Key": "", // dotnet user-secrets set "AzureCognitiveServices:Key" "****"
     "Region": "", // dotnet user-secrets set "AzureCognitiveServices:Region" "****"
     "SpeechRecognitionLanguage": "en-US",
-    // For a list of available voices, see: https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=stt-tts#text-to-speech
-    "SpeechSynthesisVoiceName": "en-US-JennyNeural",
-    "EnableSpeechStyle": "false"
+    "SpeechSynthesisVoiceName": "en-US-JennyNeural", // For a list of available voices, see https://aka.ms/maker/friendbot/voicenames
+    "EnableSpeechStyle": "true",
+    "WakePhraseModel": "hey-alex.table"
   },
 
   "OpenAI": {
@@ -24,30 +24,14 @@
     "TopP": 1, // 0.0 - 1.0
     "FrequencyPenalty": 0, // 0.0 - 2.0
     "PresencePenalty": 0, // 0.0 - 2.0
-    // For a list of available models, see https://beta.openai.com/docs/models/overview
-    "Model": "text-davinci-003"
+    "Model": "text-davinci-003" // For a list of available models, see https://beta.openai.com/docs/models/overview
   },
 
   "PromptEngine": {
-    "PromptMaxLength": 1024,
-    "Description": "Computer is a friendly, intelligent, and curious person who is good at conversation. Each response from Computer should end with a word representing Computer's emotion state, such as ~~chat~~, ~~angry~~, ~~cheerful~~, ~~sad~~, ~~excited~~, ~~friendly~~, ~~terrified~~, ~~shouting~~, ~~unfriendly~~, ~~whispering~~, and ~~hopeful~~.",
+    "PromptMaxLength": 1500,
+    "Description": "Alex is a friendly, intelligent, and curious person who is good at conversation. Each response from Alex should end with a word representing Alex's emotion state, such as ~~chat~~, ~~angry~~, ~~cheerful~~, ~~sad~~, ~~excited~~, ~~friendly~~, ~~terrified~~, ~~shouting~~, ~~unfriendly~~, ~~whispering~~, and ~~hopeful~~.",
     "DescriptionPrefix": "###",
     "InputPrefix": "You: ",
-    "OutputPrefix": "Computer: ", // It helps if this matches the AI's name in the description.
-    "ContextResetText": "start a new conversation",
-    "Examples": [
-      {
-        "Input": "You: Hello",
-        "Output": "Computer: Hello! How are you? ~~friendly~~"
-      },
-      {
-        "Input": "You: I am doing well, how about you?",
-        "Output": "Computer: I am doing very well! ~~excited~~"
-      },
-      {
-        "Input": "You: What are you up to?",
-        "Output": "Computer: I am just hanging out and talking to people. ~~chat~~"
-      }
-    ]
+    "OutputPrefix": "Alex: " // It helps if this matches the AI's name in the description.
   }
 }

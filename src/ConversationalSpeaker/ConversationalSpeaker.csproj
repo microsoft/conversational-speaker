@@ -18,6 +18,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+	<PackageReference Include="NetCoreAudio" Version="1.7.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +27,9 @@
 
   <ItemGroup>
     <None Update="configuration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Handlers\bing.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Handlers\wake-word-model.table">
@@ -44,6 +48,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Handlers\wake-word-models\hey-jerry.model.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Handlers\WakePhrases\hey-alex.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Handlers\WakePhrases\hey-computer.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Handlers\WakePhrases\hey-gp.table">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Handlers\WakePhrases\hey-janet.table">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Handlers\WakeWordModel.table">

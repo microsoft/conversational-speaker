@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NetCoreAudio;
+using System.Reflection;
 
 namespace ConversationalSpeaker
 {
@@ -17,6 +19,10 @@ namespace ConversationalSpeaker
         private Task _executeTask;
         private readonly CancellationTokenSource _cancelToken = new();
 
+        // Notification sound support
+        private readonly string _notificationSoundFilePath;
+        private readonly Player _player;
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -32,6 +38,9 @@ namespace ConversationalSpeaker
             _speaker = speaker;
             _conversationHandler = conversationHandler;
             _logger = logger;
+
+            _notificationSoundFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Handlers", "bing.mp3");
+            _player = new Player();
         }
 
         /// <summary>
@@ -48,6 +57,9 @@ namespace ConversationalSpeaker
         /// </summary>
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            // Play a notification to let the user know the app has started.
+            await _player.Play(_notificationSoundFilePath);
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 // Wait for wake word or phrase
@@ -56,20 +68,22 @@ namespace ConversationalSpeaker
                     continue;
                 }
 
+                await _player.Play(_notificationSoundFilePath);
+
                 // Say hello on startup
-                await _speaker.SpeakAsync("Hello!", cancellationToken);
+                await _speaker.SpeakAsync("Hello! ~~friendly~~", cancellationToken);
 
                 // Start listening
                 bool keepListening = true;
                 while (keepListening && !cancellationToken.IsCancellationRequested)
                 {
-                    _logger.LogInformation("Listening...");
                     string userMessage = await _listener.ListenAsync(cancellationToken);
 
                     // User said "goodbye" - stop listening
                     if (userMessage.StartsWith("goodbye", StringComparison.OrdinalIgnoreCase))
                     {
                         await _speaker.SpeakAsync("Bye!", cancellationToken);
+                        await _player.Play(_notificationSoundFilePath);
                         keepListening = false;
                         continue;
                     }

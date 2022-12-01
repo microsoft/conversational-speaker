@@ -1,5 +1,6 @@
 ﻿namespace ConversationalSpeaker.Handlers.OpenAiModels
 {
+    // https://beta.openai.com/docs/api-reference/completions
     internal class OpenAiCompletionRequest
     {
         public string model { get; set; }

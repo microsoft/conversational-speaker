@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
-using Microsoft.CognitiveServices.Speech;
+﻿using Microsoft.CognitiveServices.Speech;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.RegularExpressions;
 
 namespace ConversationalSpeaker
 {
@@ -14,6 +14,9 @@ namespace ConversationalSpeaker
         private readonly ILogger<AzCognitiveServicesSpeaker> _logger;
         private readonly SpeechSynthesizer _speechSynthesizer;
 
+        /// <summary>
+        /// Regex for extracting style cues from OpenAI responses.
+        /// </summary>
         private static readonly Regex _styleRegex = new Regex(@"(~~(.+)~~)");
 
         public AzCognitiveServicesSpeaker(
@@ -27,7 +30,6 @@ namespace ConversationalSpeaker
             SpeechConfig speechConfig = SpeechConfig.FromSubscription(_options.Key, _options.Region);
             speechConfig.SpeechSynthesisVoiceName = _options.SpeechSynthesisVoiceName;
             _speechSynthesizer = new SpeechSynthesizer(speechConfig);
-
         }
 
         /// <summary>
@@ -64,6 +66,9 @@ namespace ConversationalSpeaker
             _speechSynthesizer.Dispose();
         }
 
+        /// <summary>
+        /// Extract style cues from a message.
+        /// </summary>
         private string ExtractStyle(string message, out string style)
         {
             style = string.Empty;
@@ -76,6 +81,9 @@ namespace ConversationalSpeaker
             return message;
         }
 
+        /// <summary>
+        /// Generate speech synthesis markup language (SSML) from a message.
+        /// </summary>
         private string GenerateSsml(string message, string style, string voiceName)
             => "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:mstts=\"https://www.w3.org/2001/mstts\" xml:lang=\"en-US\">" + 
                 $"<voice name=\"{voiceName}\">" + 
