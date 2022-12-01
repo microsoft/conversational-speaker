@@ -142,7 +142,6 @@ The code base has a default wake word (i.e. "Hey, Computer.") already, which I s
   1. Rebuild and run the project to use your custom wake word.
 
 ## 4. Usage
-- To start a new conversation, say "Start a new conversation". 
 - To set context, the following phrase is recommended: "Hello, my name is \<your name\> and I live in \<your location\>."
 - Continue conversing!
     > NOTE: The current state of the prompt engine usually remains stable for short conversations. Sometimes during longer conversations, the AI may start responding with what it thinks you might say next.
