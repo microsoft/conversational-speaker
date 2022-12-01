@@ -30,7 +30,6 @@
     "Description": "Computer is a friendly, intelligent person who is good at conversation.",
     "DescriptionPrefix": "###",
     "InputPrefix": "You: ",
-    "OutputPrefix": "Computer:", // It helps if this matches the AI's name in the description.
-    "ContextResetText": "start a new conversation"
+    "OutputPrefix": "Computer: " // It helps if this matches the AI's name in the description.
   }
 }
