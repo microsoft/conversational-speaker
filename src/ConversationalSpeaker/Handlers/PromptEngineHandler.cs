@@ -50,12 +50,6 @@ namespace ConversationalSpeaker
                 return string.Empty;
             }
 
-            if (input.StartsWith(_promptEngineOptions.ContextResetText, StringComparison.OrdinalIgnoreCase))
-            {
-                _promptEngineInteractions.Clear();
-                return "Okay, let's start a new conversation.";
-            }
-
             IPrompt prompt = _promptEngine.Render(input);
 
             _logger.LogDebug($"Prompt:{Environment.NewLine}{prompt.ToString()}");
