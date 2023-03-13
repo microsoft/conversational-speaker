@@ -107,6 +107,7 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
    ```bash
    cd ~/conversational-speaker/src/ConversationalSpeaker
    dotnet user-secrets set "AzureCognitiveServices:Key" "{MyCognitiveServicesKey}"
+   dotnet user-secrets set "AzureCognitiveServices:Region" "{MyCognitiveServicesRegion (e.g., EastUS)}"
    dotnet user-secrets set "OpenAI:Key" "{MyOpenAIKey}"
    ```
 1. Build and run the code!
