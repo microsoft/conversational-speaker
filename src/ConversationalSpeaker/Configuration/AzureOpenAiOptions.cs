@@ -1,14 +1,29 @@
 ﻿namespace ConversationalSpeaker
 {
     /// <summary>
-    /// Configuration options for interacting with OpenAI.
+    /// Configuration for interacting with Azure OpenAI.
     /// </summary>
-    public class OpenAiServiceOptions
+    public class AzureOpenAiOptions
     {
         /// <summary>
         /// API Key.
         /// </summary>
         public string Key { get; set; }
+
+        /// <summary>
+        /// Endpoint for your instance of Azure OpenAI.
+        /// </summary>
+        public string Endpoint { get; set; }
+
+        /// <summary>
+        /// Deployement ID to target in Azure OpenAI.
+        /// </summary>
+        public string Deployment { get; set; }
+
+        /// <summary>
+        /// Model of deployment.
+        /// </summary>
+        public string Model { get; set; }
 
         /// <summary>
         /// Maximum number of tokens to use when calling OpenAI.
@@ -36,23 +51,21 @@
         public float PresencePenalty { get; set; }
 
         /// <summary>
-        /// Name of the model to use (e.g. text-davinci-002).
-        /// </summary>
-        public string Model { get; set; }
-
-        /// <summary>
-        /// Organization ID for those with multiple organizations (optional).
-        /// https://platform.openai.com/account/org-settings
-        /// </summary>
-        public string OrganizationId { get; set; }
-
-        /// <summary>
         /// Validate options, throw an exception is any are invalid.
         /// </summary>
         public void Validate()
         {
             if (string.IsNullOrWhiteSpace(Key))
                 throw new ArgumentException("Argument is invalid.", nameof(Key));
+
+            if (string.IsNullOrWhiteSpace(Endpoint))
+                throw new ArgumentException("Argument is invalid.", nameof(Endpoint));
+
+            if (string.IsNullOrWhiteSpace(Deployment))
+                throw new ArgumentException("Argument is invalid.", nameof(Deployment));
+            
+            if (string.IsNullOrWhiteSpace(Model))
+                throw new ArgumentException("Argument is invalid.", nameof(Model));
 
             if (MaxTokens < 0)
                 throw new ArgumentException("Argument is invalid.", nameof(MaxTokens));
@@ -68,7 +81,7 @@
 
             if (PresencePenalty < 0 || PresencePenalty > 2)
                 throw new ArgumentException("Argument is invalid.", nameof(PresencePenalty));
-            
+
             if (string.IsNullOrWhiteSpace(Model))
                 throw new ArgumentException("Argument is invalid.", nameof(Model));
         }

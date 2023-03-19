@@ -1,10 +1,10 @@
 ﻿namespace ConversationalSpeaker.Handlers.OpenAiModels
 {
-    // https://beta.openai.com/docs/api-reference/completions
-    internal class OpenAiCompletionRequest
+    // https://beta.openai.com/docs/api-reference
+    internal class OpenAIChatCompletionRequest
     {
         public string model { get; set; }
-        public string prompt { get; set; }
+        public OpenAIChatMessage[] messages { get; set; }
         public int max_tokens { get; set; }
         public float temperature { get; set; }
         public float top_p { get; set; }
@@ -13,6 +13,6 @@
         public string stop { get; set; }
         public float presence_penalty { get; set; }
         public float frequency_penalty { get; set; }
-
+        public string user { get; set; }
     }
 }

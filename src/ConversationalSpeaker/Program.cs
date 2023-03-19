@@ -1,11 +1,12 @@
-﻿using ConversationalSpeaker;
-using Microsoft.AI.PromptEngine.Generic;
+﻿using System.Reflection;
+using ConversationalSpeaker;
+using ConversationalSpeaker.Handlers.Skills;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-using System.Reflection;
+using Microsoft.SemanticKernel;
 
 IHostBuilder builder = Host.CreateDefaultBuilder(args);
 
@@ -29,20 +30,20 @@ builder.ConfigureServices((context, services) =>
     // Setup configuration options
     IConfiguration configurationRoot = context.Configuration;
     services.Configure<AzureCognitiveServicesOptions>(configurationRoot.GetSection("AzureCognitiveServices"));
-    services.Configure<OpenAiServiceOptions>(configurationRoot.GetSection("OpenAI"));
-    services.Configure<Settings>(configurationRoot.GetSection("PromptEngine"));
+    services.Configure<AzureOpenAiOptions>(configurationRoot.GetSection("AzureOpenAI"));
+    services.Configure<GeneralOptions>(configurationRoot.GetSection("General"));
+    //services.Configure<OpenAiServiceOptions>(configurationRoot.GetSection("OpenAI"));
 
-    // Add the listener
+    // Add Semantic Kernel
+    services.AddSingleton<IKernel>(serviceProvider => Kernel.Builder.Build());
+
+    // Add Skills
+    services.AddSingleton<AzCognitiveServicesSpeechSkill>();
+    //services.AddSingleton<OpenAISkill>();
+    services.AddSingleton<AzOpenAISkill>();
+
+    // Add wake phrase listener
     services.AddSingleton<AzCognitiveServicesWakeWordListener>();
-
-    // Add the listener
-    services.AddSingleton<AzCognitiveServicesListener>();
-    
-    // Add the speaker
-    services.AddSingleton<AzCognitiveServicesSpeaker>();
-    
-    // Add the conversation processor
-    services.AddSingleton<PromptEngineHandler>();
 
     // Add the primary hosted service to start the loop.
     services.AddHostedService<ConversationLoopHostedService>();

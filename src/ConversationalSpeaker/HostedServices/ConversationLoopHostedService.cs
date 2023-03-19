@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using System.Reflection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Orchestration;
 using NetCoreAudio;
-using System.Reflection;
 
 namespace ConversationalSpeaker
 {
@@ -10,10 +12,10 @@ namespace ConversationalSpeaker
     /// </summary>
     internal class ConversationLoopHostedService : IHostedService, IDisposable
     {
+        private readonly IKernel _semanticKernel;
+        private readonly IDictionary<string, ISKFunction> _speechSkill;
+        private readonly IDictionary<string, ISKFunction> _azOpenAISkill;
         private readonly AzCognitiveServicesWakeWordListener _wakeWordListener;
-        private readonly AzCognitiveServicesListener _listener;
-        private readonly AzCognitiveServicesSpeaker _speaker;
-        private readonly PromptEngineHandler _conversationHandler;
         private readonly ILogger<ConversationLoopHostedService> _logger;
 
         private Task _executeTask;
@@ -28,15 +30,17 @@ namespace ConversationalSpeaker
         /// </summary>
         public ConversationLoopHostedService(
             AzCognitiveServicesWakeWordListener wakeWordListener,
-            AzCognitiveServicesListener listener,
-            AzCognitiveServicesSpeaker speaker,
-            PromptEngineHandler conversationHandler,
+            IKernel semanticKernel,
+            AzCognitiveServicesSpeechSkill speechSkill,
+            //AzOpenAISkill openAISkill,
+            OpenAISkill openAISkill,
             ILogger<ConversationLoopHostedService> logger)
         {
+            _semanticKernel = semanticKernel;
+            _speechSkill = _semanticKernel.ImportSkill(speechSkill);
+            _azOpenAISkill = _semanticKernel.ImportSkill(openAISkill);
+
             _wakeWordListener = wakeWordListener;
-            _listener = listener;
-            _speaker = speaker;
-            _conversationHandler = conversationHandler;
             _logger = logger;
 
             _notificationSoundFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Handlers", "bing.mp3");
@@ -71,31 +75,19 @@ namespace ConversationalSpeaker
                 await _player.Play(_notificationSoundFilePath);
 
                 // Say hello on startup
-                await _speaker.SpeakAsync("Hello! ~~friendly~~", cancellationToken);
+                //await _semanticKernel.RunAsync("Hello! ~~friendly~~", _speechSkill["Speak"]);
+                await _semanticKernel.RunAsync("Hello!", _speechSkill["Speak"]);
 
                 // Start listening
                 bool keepListening = true;
                 while (keepListening && !cancellationToken.IsCancellationRequested)
                 {
-                    string userMessage = await _listener.ListenAsync(cancellationToken);
-
-                    // User said "goodbye" - stop listening
-                    if (userMessage.StartsWith("goodbye", StringComparison.OrdinalIgnoreCase))
-                    {
-                        await _speaker.SpeakAsync("Bye!", cancellationToken);
-                        await _player.Play(_notificationSoundFilePath);
-                        keepListening = false;
-                        continue;
-                    }
-
-                    // Run what the user said through the conversation handler (i.e. AI)
-                    string response = await _conversationHandler.ProcessAsync(userMessage, cancellationToken);
-
-                    // Speak the response from the AI, if any.
-                    if (!string.IsNullOrWhiteSpace(response))
-                    {
-                        await _speaker.SpeakAsync(response, cancellationToken);
-                    }
+                    await _semanticKernel.RunAsync(
+                        _speechSkill["Listen"],
+                        _azOpenAISkill["Chat"],
+                        _speechSkill["Speak"]);
+                    
+                    // TODO: User said "goodbye" - stop listening
                 }
             }
         }
@@ -114,8 +106,6 @@ namespace ConversationalSpeaker
         {
             _cancelToken.Dispose();
             _wakeWordListener.Dispose();
-            _listener.Dispose();
-            _speaker.Dispose();
         }
     }
 }
