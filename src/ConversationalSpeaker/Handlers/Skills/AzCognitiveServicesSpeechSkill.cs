@@ -16,7 +16,7 @@ namespace ConversationalSpeaker
         private readonly SpeechRecognizer _speechRecognizer;
         private readonly SpeechSynthesizer _speechSynthesizer;
 
-        public bool StopListeningRequested { get; private set; } = false;
+        
 
         /// <summary>
         /// Regex for extracting style cues from OpenAI responses.
@@ -91,22 +91,6 @@ namespace ConversationalSpeaker
             }
         }
 
-        [SKFunction("Checks to see if the user wants the system to stop listening.")]
-        [SKFunctionName("CheckForStopListeningRequest")]
-        public void StopListeningCheck(string message)
-        {
-            if (!string.IsNullOrWhiteSpace(message) && 
-                message.StartsWith("goodbye", StringComparison.InvariantCultureIgnoreCase))
-            {
-                StopListeningRequested = true;
-            }
-        }
-
-        [SKFunction("Resets the flag to stop listening.")]
-        [SKFunctionName("ResetStopListening")]
-        public void ResetStopListening() => StopListeningRequested = false;
-        
-
         /// <summary>
         /// Extract style cues from a message.
         /// </summary>
@@ -128,9 +112,11 @@ namespace ConversationalSpeaker
         private string GenerateSsml(string message, string style, string voiceName)
             => "<speak version=\"1.0\" xmlns=\"http://www.w3.org/2001/10/synthesis\" xmlns:mstts=\"https://www.w3.org/2001/mstts\" xml:lang=\"en-US\">" +
                 $"<voice name=\"{voiceName}\">" +
-                    $"<mstts:express-as style=\"{style}\">" +
-                        $"{message}" +
-                    "</mstts:express-as>" +
+                    $"<prosody rate=\"{_options.Rate}\">" +
+                        $"<mstts:express-as style=\"{style}\">" +
+                            $"{message}" +
+                        "</mstts:express-as>" +
+                    "</prosody>" +
                     "</voice>" +
                 "</speak>";
 

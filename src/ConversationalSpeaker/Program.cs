@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using ConversationalSpeaker;
-using ConversationalSpeaker.Handlers.Skills;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,14 +31,14 @@ builder.ConfigureServices((context, services) =>
     services.Configure<AzureCognitiveServicesOptions>(configurationRoot.GetSection("AzureCognitiveServices"));
     services.Configure<AzureOpenAiOptions>(configurationRoot.GetSection("AzureOpenAI"));
     services.Configure<GeneralOptions>(configurationRoot.GetSection("General"));
-    //services.Configure<OpenAiServiceOptions>(configurationRoot.GetSection("OpenAI"));
+    services.Configure<OpenAiServiceOptions>(configurationRoot.GetSection("OpenAI"));
 
     // Add Semantic Kernel
     services.AddSingleton<IKernel>(serviceProvider => Kernel.Builder.Build());
 
     // Add Skills
     services.AddSingleton<AzCognitiveServicesSpeechSkill>();
-    //services.AddSingleton<OpenAISkill>();
+    services.AddSingleton<OpenAISkill>();
     services.AddSingleton<AzOpenAISkill>();
 
     // Add wake phrase listener

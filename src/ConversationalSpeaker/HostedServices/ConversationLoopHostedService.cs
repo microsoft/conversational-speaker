@@ -32,8 +32,8 @@ namespace ConversationalSpeaker
             AzCognitiveServicesWakeWordListener wakeWordListener,
             IKernel semanticKernel,
             AzCognitiveServicesSpeechSkill speechSkill,
-            //AzOpenAISkill openAISkill,
-            OpenAISkill openAISkill,
+            AzOpenAISkill openAISkill,
+            //OpenAISkill openAISkill,
             ILogger<ConversationLoopHostedService> logger)
         {
             _semanticKernel = semanticKernel;
@@ -61,11 +61,11 @@ namespace ConversationalSpeaker
         /// </summary>
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            // Play a notification to let the user know the app has started.
-            await _player.Play(_notificationSoundFilePath);
-
             while (!cancellationToken.IsCancellationRequested)
             {
+                // Play a notification to let the user know we have started listening for the wake phrase.
+                await _player.Play(_notificationSoundFilePath);
+
                 // Wait for wake word or phrase
                 if (!await _wakeWordListener.WaitForWakeWordAsync(cancellationToken))
                 {
@@ -82,12 +82,15 @@ namespace ConversationalSpeaker
                 bool keepListening = true;
                 while (keepListening && !cancellationToken.IsCancellationRequested)
                 {
-                    await _semanticKernel.RunAsync(
+                    SKContext context = await _semanticKernel.RunAsync(
                         _speechSkill["Listen"],
                         _azOpenAISkill["Chat"],
-                        _speechSkill["Speak"]);
+                        _speechSkill["Speak"]) ;
                     
-                    // TODO: User said "goodbye" - stop listening
+                    if (!string.IsNullOrWhiteSpace(context[AzOpenAISkill.StopListentingVariableName]))
+                    {
+                        break;
+                    }
                 }
             }
         }

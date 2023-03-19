@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using AI.Dev.OpenAI.GPT;
+using System.Text.Json;
 using Azure;
 using Azure.AI.OpenAI;
 using ConversationalSpeaker.Handlers.OpenAiModels;
@@ -7,7 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel.Orchestration;
 using Microsoft.SemanticKernel.SkillDefinition;
 
-namespace ConversationalSpeaker.Handlers.Skills
+namespace ConversationalSpeaker
 {
     public class AzOpenAISkill
     {
@@ -19,6 +21,8 @@ namespace ConversationalSpeaker.Handlers.Skills
         private const string _prompt = "\n<|im_start|>assistant\n";
         private readonly string _stop = "<|im_end|>";
         private readonly List<OpenAIChatMessage> _messages;
+
+        public const string StopListentingVariableName = "AzCognitiveServicesSpeechSkill:StopListening";
 
         public AzOpenAISkill(
             IOptions<AzureOpenAiOptions> options,
@@ -42,11 +46,30 @@ namespace ConversationalSpeaker.Handlers.Skills
                 return string.Empty;
             }
 
+            if (!string.IsNullOrWhiteSpace(input) &&
+               input.StartsWith("goodbye", StringComparison.InvariantCultureIgnoreCase))
+            {
+                context[StopListentingVariableName] = true.ToString();
+            }
+            else
+            {
+                context[StopListentingVariableName] = string.Empty;
+            }
+
             _messages.Add(new OpenAIChatMessage()
             {
                 role = "user",
                 content = input
             });
+
+            string fullPrompt = ToChatML(_generalOptions.SystemPrompt, _messages) + _prompt;
+
+            int tokenCount = GPT3Tokenizer.Encode(JsonSerializer.Serialize(fullPrompt)).Count;
+            while (tokenCount > _options.MaxTokens)
+            {
+                _messages.RemoveRange(0, 1);
+                tokenCount = GPT3Tokenizer.Encode(JsonSerializer.Serialize(fullPrompt)).Count;
+            }
 
             CompletionsOptions co = new CompletionsOptions()
             {
@@ -62,6 +85,11 @@ namespace ConversationalSpeaker.Handlers.Skills
 
             Response<Completions> completions = await _client.GetCompletionsAsync(_options.Deployment, co, context.CancellationToken);
             string response = completions.Value.Choices.First().Text;
+            _messages.Add(new OpenAIChatMessage()
+            {
+                role = "assistant",
+                content = response
+            });
             return response;
         }
 
