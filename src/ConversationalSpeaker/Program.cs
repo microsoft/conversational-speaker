@@ -38,8 +38,8 @@ builder.ConfigureServices((context, services) =>
 
     // Add Skills
     services.AddSingleton<AzCognitiveServicesSpeechSkill>();
-    services.AddSingleton<OpenAISkill>();
-    services.AddSingleton<AzOpenAISkill>();
+    services.AddSingleton<OpenAIChatGptSkill>();
+    services.AddSingleton<AzOpenAIChatGptSkill>();
 
     // Add wake phrase listener
     services.AddSingleton<AzCognitiveServicesWakeWordListener>();

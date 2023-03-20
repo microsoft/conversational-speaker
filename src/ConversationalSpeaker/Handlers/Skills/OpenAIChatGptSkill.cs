@@ -10,20 +10,21 @@ using Microsoft.SemanticKernel.SkillDefinition;
 
 namespace ConversationalSpeaker
 {
-    // TODO - remove this class and use Semantic Kernel's Semantic Functions instead.
-    public partial class OpenAISkill
+    public partial class OpenAIChatGptSkill
     {
-        private readonly OpenAiServiceOptions _openAiServiceOptions;
+        private readonly OpenAiServiceOptions _options;
         private readonly ILogger _logger;
         private readonly List<OpenAIChatMessage> _messages;
 
-        public OpenAISkill(
-            IOptions<OpenAiServiceOptions> openAiServiceOptions,
+        public const string StopListentingVariableName = "StopListening";
+
+        public OpenAIChatGptSkill(
+            IOptions<OpenAiServiceOptions> options,
             IOptions<GeneralOptions> generalOptions,
-            ILogger<OpenAISkill> logger)
+            ILogger<OpenAIChatGptSkill> logger)
         {
             _logger = logger;
-            _openAiServiceOptions = openAiServiceOptions.Value;
+            _options = options.Value;
             
             _messages = new List<OpenAIChatMessage>
             {
@@ -44,28 +45,38 @@ namespace ConversationalSpeaker
                 return string.Empty;
             }
 
+            if (!string.IsNullOrWhiteSpace(input) &&
+               input.StartsWith("goodbye", StringComparison.InvariantCultureIgnoreCase))
+            {
+                context[StopListentingVariableName] = true.ToString();
+            }
+            else
+            {
+                context[StopListentingVariableName] = string.Empty;
+            }
+
             _messages.Add(new OpenAIChatMessage()
             {
                 role = "user",
                 content = input,
             });
 
-            List<int> tokens = GPT3Tokenizer.Encode(JsonSerializer.Serialize(_messages));
-            int tokenCount = tokens.Count;
-            // TODO - Make sure we are still under token limit, otherwise remove context until we are.
+            int tokenCount = GPT3Tokenizer.Encode(JsonSerializer.Serialize(_messages)).Count;
+            while (tokenCount > _options.MaxTokens && _messages.Count > 2) 
+            {
+                _messages.RemoveRange(1, 1); // Leave the system message in place.
+                tokenCount = GPT3Tokenizer.Encode(JsonSerializer.Serialize(_messages)).Count;
+            }
 
             OpenAIChatCompletionRequest completionRequest = new OpenAIChatCompletionRequest()
             {
-                model = _openAiServiceOptions.Model,
+                model = _options.Model,
                 messages = _messages.ToArray(),
-                temperature = _openAiServiceOptions.Temperature,
-                top_p = _openAiServiceOptions.TopP,
+                temperature = _options.Temperature,
                 n = 1,
-                stream = false,
-                stop = "\n",
-                max_tokens = _openAiServiceOptions.MaxTokens,
-                presence_penalty = _openAiServiceOptions.PresencePenalty,
-                frequency_penalty = _openAiServiceOptions.FrequencyPenalty,
+                max_tokens = _options.MaxTokens,
+                presence_penalty = _options.PresencePenalty,
+                frequency_penalty = _options.FrequencyPenalty,
                 user = "ConversationalSpeaker"
             };
 
@@ -75,11 +86,11 @@ namespace ConversationalSpeaker
                 RequestUri = new Uri("https://api.openai.com/v1/chat/completions"),
                 Content = JsonContent.Create(completionRequest, MediaTypeHeaderValue.Parse("application/json"))
             };
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _openAiServiceOptions.Key);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _options.Key);
             
-            if (!string.IsNullOrEmpty(_openAiServiceOptions.OrganizationId))
+            if (!string.IsNullOrEmpty(_options.OrganizationId))
             {
-                request.Headers.Add("OpenAI-Organization", _openAiServiceOptions.OrganizationId);
+                request.Headers.Add("OpenAI-Organization", _options.OrganizationId);
             }
 
             using HttpClient httpClient = new HttpClient();
@@ -93,6 +104,14 @@ namespace ConversationalSpeaker
 
             OpenAIChatCompletionResponse responseContent = await response.Content.ReadFromJsonAsync<OpenAIChatCompletionResponse>(cancellationToken: context.CancellationToken);
 
+            // Add original user input
+            _messages.Add(new OpenAIChatMessage()
+            {
+                role = "user",
+                content = input
+            });
+
+            // Add AI response
             OpenAIChatCompletionResponse.Choice firstChoice = responseContent.choices.First();
             _messages.Add(responseContent.choices.First().message);
 

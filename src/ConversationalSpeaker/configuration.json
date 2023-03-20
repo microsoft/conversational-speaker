@@ -26,22 +26,21 @@
     "Key": "", // dotnet user-secrets set "AzureOpenAI:Key" "****"
     "Endpoint": "", // dotnet user-secrets set "AzureOpenAI:Endpoint" "****"
     "Deployment": "gpt-35-turbo",
-    "MaxTokens": 4096,
+    "MaxTokens": 4095,
     "Temperature": 0.7, // 0.0 - 1.0
     "TopP": 1, // 0.0 - 1.0
     "FrequencyPenalty": 0, // 0.0 - 2.0
     "PresencePenalty": 0, // 0.0 - 2.0
-    "Model": "gpt-35-turbo"
+    "Model": "gpt-35-turbo" // currently optimized for "chat" models only
   },
 
   "OpenAI": {
     "Key": "", // dotnet user-secrets set "OpenAI:Key" "****"
-    "MaxTokens": 1024,
+    "MaxTokens": 1500,
     "Temperature": 0.7, // 0.0 - 1.0
-    "TopP": 1, // 0.0 - 1.0
     "FrequencyPenalty": 0, // 0.0 - 2.0
     "PresencePenalty": 0, // 0.0 - 2.0
-    "Model": "text-davinci-003", // For a list of available models, see https://beta.openai.com/docs/models/overview
+    "Model": "gpt-3.5-turbo", // For a list of available models, see https://beta.openai.com/docs/models/overview, currently optimized for "chat" models only
     "OrganizationId": "" // Organization ID for those with multiple organizations (optional).
   }
 }

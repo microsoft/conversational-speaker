@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using AI.Dev.OpenAI.GPT;
 using System.Text.Json;
+using AI.Dev.OpenAI.GPT;
 using Azure;
 using Azure.AI.OpenAI;
 using ConversationalSpeaker.Handlers.OpenAiModels;
@@ -11,7 +11,7 @@ using Microsoft.SemanticKernel.SkillDefinition;
 
 namespace ConversationalSpeaker
 {
-    public class AzOpenAISkill
+    public class AzOpenAIChatGptSkill
     {
         private readonly ILogger _logger;
         private readonly OpenAIClient _client;
@@ -22,12 +22,12 @@ namespace ConversationalSpeaker
         private readonly string _stop = "<|im_end|>";
         private readonly List<OpenAIChatMessage> _messages;
 
-        public const string StopListentingVariableName = "AzCognitiveServicesSpeechSkill:StopListening";
+        public const string StopListentingVariableName = "StopListening";
 
-        public AzOpenAISkill(
+        public AzOpenAIChatGptSkill(
             IOptions<AzureOpenAiOptions> options,
             IOptions<GeneralOptions> generalOptions,
-            ILogger<AzOpenAISkill> logger)
+            ILogger<AzOpenAIChatGptSkill> logger)
         {
             _logger = logger;
             _options = options.Value;
@@ -56,18 +56,12 @@ namespace ConversationalSpeaker
                 context[StopListentingVariableName] = string.Empty;
             }
 
-            _messages.Add(new OpenAIChatMessage()
-            {
-                role = "user",
-                content = input
-            });
-
             string fullPrompt = ToChatML(_generalOptions.SystemPrompt, _messages) + _prompt;
 
             int tokenCount = GPT3Tokenizer.Encode(JsonSerializer.Serialize(fullPrompt)).Count;
-            while (tokenCount > _options.MaxTokens)
+            while (tokenCount > _options.MaxTokens && _messages.Count > 2)
             {
-                _messages.RemoveRange(0, 1);
+                _messages.RemoveRange(1, 1); // Leave system message in place
                 tokenCount = GPT3Tokenizer.Encode(JsonSerializer.Serialize(fullPrompt)).Count;
             }
 
@@ -84,16 +78,26 @@ namespace ConversationalSpeaker
             co.Stop.Add(_stop);
 
             Response<Completions> completions = await _client.GetCompletionsAsync(_options.Deployment, co, context.CancellationToken);
+
+            // Add original user input
+            _messages.Add(new OpenAIChatMessage()
+            {
+                role = "user",
+                content = input
+            });
+
+            // Add AI response
             string response = completions.Value.Choices.First().Text;
             _messages.Add(new OpenAIChatMessage()
             {
                 role = "assistant",
                 content = response
             });
+            
             return response;
         }
 
-        public string ToChatML(string systemMessage, IList<OpenAIChatMessage> messages)
+        private string ToChatML(string systemMessage, IList<OpenAIChatMessage> messages)
         {
             StringBuilder builder = new StringBuilder();
             

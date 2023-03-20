@@ -14,7 +14,7 @@ namespace ConversationalSpeaker
     {
         private readonly IKernel _semanticKernel;
         private readonly IDictionary<string, ISKFunction> _speechSkill;
-        private readonly IDictionary<string, ISKFunction> _azOpenAISkill;
+        private readonly IDictionary<string, ISKFunction> _openAISkill;
         private readonly AzCognitiveServicesWakeWordListener _wakeWordListener;
         private readonly ILogger<ConversationLoopHostedService> _logger;
 
@@ -32,13 +32,12 @@ namespace ConversationalSpeaker
             AzCognitiveServicesWakeWordListener wakeWordListener,
             IKernel semanticKernel,
             AzCognitiveServicesSpeechSkill speechSkill,
-            AzOpenAISkill openAISkill,
-            //OpenAISkill openAISkill,
+            OpenAIChatGptSkill openAISkill,
             ILogger<ConversationLoopHostedService> logger)
         {
             _semanticKernel = semanticKernel;
             _speechSkill = _semanticKernel.ImportSkill(speechSkill);
-            _azOpenAISkill = _semanticKernel.ImportSkill(openAISkill);
+            _openAISkill = _semanticKernel.ImportSkill(openAISkill);
 
             _wakeWordListener = wakeWordListener;
             _logger = logger;
@@ -75,7 +74,6 @@ namespace ConversationalSpeaker
                 await _player.Play(_notificationSoundFilePath);
 
                 // Say hello on startup
-                //await _semanticKernel.RunAsync("Hello! ~~friendly~~", _speechSkill["Speak"]);
                 await _semanticKernel.RunAsync("Hello!", _speechSkill["Speak"]);
 
                 // Start listening
@@ -84,10 +82,11 @@ namespace ConversationalSpeaker
                 {
                     SKContext context = await _semanticKernel.RunAsync(
                         _speechSkill["Listen"],
-                        _azOpenAISkill["Chat"],
+                        _openAISkill["Chat"],
                         _speechSkill["Speak"]) ;
-                    
-                    if (!string.IsNullOrWhiteSpace(context[AzOpenAISkill.StopListentingVariableName]))
+
+                    if (context.Variables.ContainsKey(AzOpenAIChatGptSkill.StopListentingVariableName) &&
+                        !string.IsNullOrWhiteSpace(context[AzOpenAIChatGptSkill.StopListentingVariableName]))
                     {
                         break;
                     }
