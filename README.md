@@ -1,7 +1,6 @@
 # Conversational Speaker
+## Now with Semantic Kernel and ChatGPT!
 The Conversational Speaker, a.k.a. "Friend Bot", uses a Raspberry Pi to enable spoken conversation with OpenAI large language models. This implementation listens to speech, processes the conversation through the OpenAI service, and responds back.
-
-The conversation's context is maintained using a _prompt engine_. Microsoft supports a series of separate prompt engines written for [python](https://github.com/microsoft/prompt-engine-py), [typescript](https://github.com/microsoft/prompt-engine), and [dotnet](https://github.com/microsoft/prompt-engine-dotnet). For more information about _prompt design_, checkout [OpenAI's documentation](https://aka.ms/maker/openai/promptdesign).
 
 This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Windows.
 
@@ -21,13 +20,15 @@ This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Wind
     - **Free tier**: 5 audio hours per month and 1 concurrent request. 
     - **Free $200 credit**: With a new Azure account that can be used during the first 30 days.
   - [OpenAI](https://aka.ms/maker/openai/pricing)
-    - **$0.02 / ~750 words**: Davinci models (most powerful).
-    - **$0.002 / ~750 words**: Curie models (still pretty good with faster response time). 
+    - **$0.002 / 1K tokens / ~750 words**: ChatGPT (gpt-3.5-turbo)
     - **Free $18 credit**: With a new OpenAI account that can be used during your first 90 days.
-
-
+    
 # Setup
-You will need an instance of Azure Cognitive Services and an OpenAI account. You can run the software on nearly any platform, but let's start with a Raspberry Pi.
+You will need an instance of Azure Cognitive Services and an OpenAI account. 
+You can run the software on nearly any platform, but let's start with a Raspberry Pi.
+
+You may also use an instance of Azure OpenAI in place of OpenAI as well. 
+
 
 ## Raspberry Pi
 _If you are new to Raspberry Pis, check out this [getting started](https://aka.ms/maker/rpi/gettingstarted) guide._
@@ -78,7 +79,7 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
   1. In the top-right corner click on your account. Click on `View API keys`.
   1. Click `+ Create new secret key`. Copy the generated key and save it in a secure location for later.
 
-  _If you are curious to play with the large language models directly, check out the `Playground` at the top of the page after logging in to https://aka.ms/maker/openai._
+  _If you are curious to play with the large language models directly, check out the https://platform.openai.com/playground?mode=chat at the top of the page after logging in to https://aka.ms/maker/openai._
 
 # The Code
 ## 1. Code Configuration
@@ -101,7 +102,7 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
    - For Windows, go to https://aka.ms/maker/dotnet/download, under .NET 6.0 click `Download .NET SDK x64`, and run the installer.
 1. Clone the repo.
    ```bash
-   git clone --recursive --branch hackster-tutorial-3 https://github.com/microsoft/conversational-speaker.git
+   git clone https://github.com/microsoft/conversational-speaker.git
    ```
 1. Set your API keys: Replace `{MyCognitiveServicesKey}` with your Azure Cognitive Services key and `{MyOpenAIKey}` with your OpenAI API key from the sections above.
    ```bash
@@ -194,46 +195,6 @@ speechConfig.SetProperty(PropertyId.SpeechServiceResponse_PostProcessingOption, 
 _audioConfig = AudioConfig.FromDefaultMicrophoneInput();
 _speechRecognizer = new SpeechRecognizer(speechConfig, _audioConfig);
 ```
-
-## AI
-To enable the conversation part, we send the user's spoken text into an OpenAI GPT-3 large language model with a little help from a prompt engine. The prompt engine remembers a description of the AI, tracks previous inputs and responses, and adds any new responses to future interactions. Since we want the AI to add emotion/style cues, we seed the prompt with a few example interactions to teach it how to respond. The double-tilda bracketed cues give our application something that is easy to parse and forward to our text-to-speech API.
-```
-### Computer is a friendly, intelligent, and curious person who is good at conversation. Each response from Computer should end with a word representing Computer's emotion state, such as ~~chat~~, ~~angry~~, ~~cheerful~~, ~~sad~~, ~~excited~~, ~~friendly~~, ~~terrified~~, ~~shouting~~, ~~unfriendly~~, ~~whispering~~, and ~~hopeful~~.
-
-Human: Hello
-Computer: Hello! How are you? ~~friendly~~
-
-Human: I am doing well, how about you?
-Computer: I am doing very well! ~~excited~~
-
-Human: What are you up to?
-Computer: I am just hanging out and talking to people. ~~chat~~
-```
-
-When when we talk to the AI, we send the hints above, along with other previous interactions, and the AI attempts to append appropriate cues to its responses.
-
-The prompt design is asking OpenAI to complete the prompt or, in other words, ask "what would Computer say here?" If we were to say "I am doing well!", the prompt engine would render prompt like the one below and ask OpenAI to complete it.
-```
-### Computer is a friendly, intelligent, and curious person who is good at conversation. Each response from Computer should end with a word representing Computer's emotion state, such as ~~chat~~, ~~angry~~, ~~cheerful~~, ~~sad~~, ~~excited~~, ~~friendly~~, ~~terrified~~, ~~shouting~~, ~~unfriendly~~, ~~whispering~~, and ~~hopeful~~.
-
-Human: Hello
-Computer: Hello! How are you? ~~friendly~~
-
-Human: I am doing well, how about you?
-Computer: I am doing very well! ~~excited~~
-
-Human: What are you up to?
-Computer: I am just hanging out and talking to people. ~~chat~~
-
-Human: Hello. How are you?
-Computer: Hello! I am doing very well. How about yourself?
-
-Human: I am doing well!
-Computer:
-```
-With any luck, OpenAI will respond with something like `"That's great to hear! ~~excited~~"` and our prompt engine will that that response to the list of interactions.
-
-In this way, we have the AI build a simple history for itself by having our prompt engine remember previous interactions and send them back to the AI in subsequent interactions. Check out `PromptEngineHandler.cs` for how we process interactions and call into OpenAI. For more information on prompt design, check out https://aka.ms/maker/openai/promptdesign.
 
 ## Speaking
 And last, but not least, we head back to Azure Cognitive Services for its text-to-speech feature to give a voice to our AI. Since we are parsing out a style cue from OpenAI, we'll need to use the text-to-speech's Speech Synthesis Markup Language (SSML) support.

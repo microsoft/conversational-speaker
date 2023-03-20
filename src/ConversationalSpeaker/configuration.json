@@ -8,44 +8,39 @@
     }
   },
 
+  "General": {
+    "SystemPrompt": "You are a friendly, intelligent, and curious assistant who is good at conversation. Your name is Alex."
+  },
+
   "AzureCognitiveServices": {
     "Key": "", // dotnet user-secrets set "AzureCognitiveServices:Key" "****"
     "Region": "", // dotnet user-secrets set "AzureCognitiveServices:Region" "****"
     "SpeechRecognitionLanguage": "en-US",
     "SpeechSynthesisVoiceName": "en-US-JennyNeural", // For a list of available voices, see https://aka.ms/maker/friendbot/voicenames
-    "EnableSpeechStyle": "true",
+    "EnableSpeechStyle": "false", // TODO: not supported yet after the migration to ChatGPT.
+    "Rate": "+15%", // https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/speech-synthesis-markup-voice#adjust-prosody
     "WakePhraseModel": "hey-alex.table"
+  },
+
+  "AzureOpenAI": {
+    "Key": "", // dotnet user-secrets set "AzureOpenAI:Key" "****"
+    "Endpoint": "", // dotnet user-secrets set "AzureOpenAI:Endpoint" "****"
+    "Deployment": "gpt-35-turbo",
+    "MaxTokens": 4095,
+    "Temperature": 0.7, // 0.0 - 1.0
+    "TopP": 1, // 0.0 - 1.0
+    "FrequencyPenalty": 0, // 0.0 - 2.0
+    "PresencePenalty": 0, // 0.0 - 2.0
+    "Model": "gpt-35-turbo" // currently optimized for "chat" models only
   },
 
   "OpenAI": {
     "Key": "", // dotnet user-secrets set "OpenAI:Key" "****"
     "MaxTokens": 1500,
     "Temperature": 0.7, // 0.0 - 1.0
-    "TopP": 1, // 0.0 - 1.0
     "FrequencyPenalty": 0, // 0.0 - 2.0
     "PresencePenalty": 0, // 0.0 - 2.0
-    "Model": "text-davinci-003" // For a list of available models, see https://beta.openai.com/docs/models/overview
-  },
-
-  "PromptEngine": {
-    "PromptMaxLength": 1500,
-    "Description": "Alex is a friendly, intelligent, and curious person who is good at conversation. Each response from Alex should end with a word representing Alex's emotion state, such as ~~chat~~, ~~angry~~, ~~cheerful~~, ~~sad~~, ~~excited~~, ~~friendly~~, ~~terrified~~, ~~shouting~~, ~~unfriendly~~, ~~whispering~~, and ~~hopeful~~.",
-    "DescriptionPrefix": "###",
-    "InputPrefix": "You: ",
-    "OutputPrefix": "Alex: ", // It helps if this matches the AI's name in the description.
-    "Examples": [
-      {
-        "Input": "You: Hello",
-        "Output": "Alex: Hello! How are you? ~~friendly~~"
-      },
-      {
-        "Input": "You: I am doing well, how about you?",
-        "Output": "Alex: I am doing very well! ~~excited~~"
-      },
-      {
-        "Input": "You: What are you up to?",
-        "Output": "Alex: I am just hanging out and talking to people. ~~chat~~"
-      }
-    ]
+    "Model": "gpt-3.5-turbo", // For a list of available models, see https://beta.openai.com/docs/models/overview, currently optimized for "chat" models only
+    "OrganizationId": "" // Organization ID for those with multiple organizations (optional).
   }
 }

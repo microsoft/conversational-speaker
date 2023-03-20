@@ -39,6 +39,12 @@
         public string WakePhraseModel { get; set; }
 
         /// <summary>
+        /// Indicates the speaking rate of the text.
+        /// https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/speech-synthesis-markup-voice#adjust-prosody
+        /// </summary>
+        public string Rate { get; set; }
+
+        /// <summary>
         /// Validate options, throw an exception is any are invalid.
         /// </summary>
         public void Validate()

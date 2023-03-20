@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using System.Reflection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Orchestration;
 using NetCoreAudio;
-using System.Reflection;
 
 namespace ConversationalSpeaker
 {
@@ -10,10 +12,10 @@ namespace ConversationalSpeaker
     /// </summary>
     internal class ConversationLoopHostedService : IHostedService, IDisposable
     {
+        private readonly IKernel _semanticKernel;
+        private readonly IDictionary<string, ISKFunction> _speechSkill;
+        private readonly IDictionary<string, ISKFunction> _openAISkill;
         private readonly AzCognitiveServicesWakeWordListener _wakeWordListener;
-        private readonly AzCognitiveServicesListener _listener;
-        private readonly AzCognitiveServicesSpeaker _speaker;
-        private readonly PromptEngineHandler _conversationHandler;
         private readonly ILogger<ConversationLoopHostedService> _logger;
 
         private Task _executeTask;
@@ -28,15 +30,16 @@ namespace ConversationalSpeaker
         /// </summary>
         public ConversationLoopHostedService(
             AzCognitiveServicesWakeWordListener wakeWordListener,
-            AzCognitiveServicesListener listener,
-            AzCognitiveServicesSpeaker speaker,
-            PromptEngineHandler conversationHandler,
+            IKernel semanticKernel,
+            AzCognitiveServicesSpeechSkill speechSkill,
+            OpenAIChatGptSkill openAISkill,
             ILogger<ConversationLoopHostedService> logger)
         {
+            _semanticKernel = semanticKernel;
+            _speechSkill = _semanticKernel.ImportSkill(speechSkill);
+            _openAISkill = _semanticKernel.ImportSkill(openAISkill);
+
             _wakeWordListener = wakeWordListener;
-            _listener = listener;
-            _speaker = speaker;
-            _conversationHandler = conversationHandler;
             _logger = logger;
 
             _notificationSoundFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Handlers", "bing.mp3");
@@ -57,11 +60,11 @@ namespace ConversationalSpeaker
         /// </summary>
         public async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            // Play a notification to let the user know the app has started.
-            await _player.Play(_notificationSoundFilePath);
-
             while (!cancellationToken.IsCancellationRequested)
             {
+                // Play a notification to let the user know we have started listening for the wake phrase.
+                await _player.Play(_notificationSoundFilePath);
+
                 // Wait for wake word or phrase
                 if (!await _wakeWordListener.WaitForWakeWordAsync(cancellationToken))
                 {
@@ -71,30 +74,21 @@ namespace ConversationalSpeaker
                 await _player.Play(_notificationSoundFilePath);
 
                 // Say hello on startup
-                await _speaker.SpeakAsync("Hello! ~~friendly~~", cancellationToken);
+                await _semanticKernel.RunAsync("Hello!", _speechSkill["Speak"]);
 
                 // Start listening
                 bool keepListening = true;
                 while (keepListening && !cancellationToken.IsCancellationRequested)
                 {
-                    string userMessage = await _listener.ListenAsync(cancellationToken);
+                    SKContext context = await _semanticKernel.RunAsync(
+                        _speechSkill["Listen"],
+                        _openAISkill["Chat"],
+                        _speechSkill["Speak"]) ;
 
-                    // User said "goodbye" - stop listening
-                    if (userMessage.StartsWith("goodbye", StringComparison.OrdinalIgnoreCase))
+                    if (context.Variables.ContainsKey(AzOpenAIChatGptSkill.StopListentingVariableName) &&
+                        !string.IsNullOrWhiteSpace(context[AzOpenAIChatGptSkill.StopListentingVariableName]))
                     {
-                        await _speaker.SpeakAsync("Bye!", cancellationToken);
-                        await _player.Play(_notificationSoundFilePath);
-                        keepListening = false;
-                        continue;
-                    }
-
-                    // Run what the user said through the conversation handler (i.e. AI)
-                    string response = await _conversationHandler.ProcessAsync(userMessage, cancellationToken);
-
-                    // Speak the response from the AI, if any.
-                    if (!string.IsNullOrWhiteSpace(response))
-                    {
-                        await _speaker.SpeakAsync(response, cancellationToken);
+                        break;
                     }
                 }
             }
@@ -114,8 +108,6 @@ namespace ConversationalSpeaker
         {
             _cancelToken.Dispose();
             _wakeWordListener.Dispose();
-            _listener.Dispose();
-            _speaker.Dispose();
         }
     }
 }
