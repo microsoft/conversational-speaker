@@ -1,5 +1,5 @@
 # Conversational Speaker
-## Now with Semantic Kernel and ChatGPT!
+## Now with [Semantic Kernel](https://aka.ms/skrepo) and [ChatGPT](https://openai.com/blog/chatgpt)!
 The Conversational Speaker, a.k.a. "Friend Bot", uses a Raspberry Pi to enable spoken conversation with OpenAI large language models. This implementation listens to speech, processes the conversation through the OpenAI service, and responds back.
 
 This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Windows.
