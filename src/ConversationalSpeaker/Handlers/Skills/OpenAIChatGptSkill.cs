@@ -36,7 +36,7 @@ namespace ConversationalSpeaker
             };
         }
 
-        [SKFunction("Create a chat prompt using a prompt engine.")]
+        [SKFunction("Create a chat prompt.")]
         [SKFunctionName("Chat")]
         public async Task<string> Chat(string input, SKContext context)
         {
