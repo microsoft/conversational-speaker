@@ -36,16 +36,14 @@ builder.ConfigureServices((context, services) =>
     // Add Semantic Kernel
     services.AddSingleton<IKernel>(serviceProvider => Kernel.Builder.Build());
 
-    // Add Skills
+    // Add Native Skills
     services.AddSingleton<AzCognitiveServicesSpeechSkill>();
-    services.AddSingleton<OpenAIChatGptSkill>();
-    services.AddSingleton<AzOpenAIChatGptSkill>();
 
     // Add wake phrase listener
     services.AddSingleton<AzCognitiveServicesWakeWordListener>();
 
     // Add the primary hosted service to start the loop.
-    services.AddHostedService<ConversationLoopHostedService>();
+    services.AddHostedService<HostedService>();
 });
 
 IHost host = builder.Build();
