@@ -109,10 +109,10 @@ namespace ConversationalSpeaker
                     string reply = string.Empty;
                     try
                     {
+                        _chatHistory.AddUserMessage(userSpoke);
                         reply = await _chatCompletion.GenerateMessageAsync(_chatHistory, _chatRequestSettings);
 
                         // Add the interaction to the chat history.
-                        _chatHistory.AddUserMessage(userSpoke);
                         _chatHistory.AddAssistantMessage(reply);
                     }
                     catch (AIException aiex)
