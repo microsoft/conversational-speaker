@@ -57,13 +57,17 @@ namespace ConversationalSpeaker
                         _logger.LogInformation($"Recognized: {result.Text}");
                         return result.Text;
                     case ResultReason.Canceled:
-                        _logger.LogInformation($"Speech recognizer session canceled.");
+                        _logger.LogWarning($"Speech recognizer session canceled.");
+                        
+                        CancellationDetails cancelDetails = CancellationDetails.FromResult(result);
+                        _logger.LogWarning($"{cancelDetails.Reason}: {cancelDetails.ErrorCode}");
+                        _logger.LogDebug(cancelDetails.ToString());
                         break;
                 }
             }
             return string.Empty;
         }
-
+        
         [SKFunction("Speak the current context (text-to-speech).")]
         [SKFunctionName("Speak")]
         public async Task SpeakAsync(string message, SKContext context)
