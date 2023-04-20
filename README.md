@@ -138,7 +138,15 @@ There are several ways to run a program when the Raspberry Pi boots. Below is a 
 ## 3. (Optional) Create a custom wake phrase
 The code base has a default wake phrase (`"Hey, Computer."`) already, which I suggest you use first. If you want to create your own (free!) custom wake word, then follow the steps below.
   1. Create a custom keyword model using the directions here: https://aka.ms/hackster/microsoft/wakeword. 
-  1. Download the model, extract the `.table` file, and overwrite `src/ConversationalSpeaker/Handlers/WakeWordModel.table`.
+  1. Download the model, extract the `.table` file and copy it to `src/ConversationalSpeaker/Handlers/WakePhrases`.
+  1. Update `ConversationalSpekaer.csproj` file to include your wake phrase file in the build.
+     ```xml
+     <ItemGroup>
+       <None Update="Handlers\WakePhrases\{YOUR FILE}.table">
+         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+       </None>
+     </ItemGroup>
+     ```
   1. Rebuild and run the project to use your custom wake word.
 
 ## 4. Usage
