@@ -223,6 +223,15 @@ In the case of speaking `"That's great to hear! ~~excited~~"`, the SSML sent to 
 </speak>
 ```
 
+# Troubleshooting
+## Speech recognizer session canceled.
+This can occur when the Azure Speech SDK is having trouble accessing your microphone. To get more details on
+the issue, enable debug logging by setting the `Logging:LogLevel:Default` setting in `configution.json` to `Debug`
+and run the application again.
+
+Additionally, make sure your microphone is not being used by another application and is not set to "Do not allow apps to access your microphone".
+
+
 # Contributing
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
