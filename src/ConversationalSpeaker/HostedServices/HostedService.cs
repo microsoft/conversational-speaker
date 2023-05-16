@@ -5,8 +5,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.AI;
 using Microsoft.SemanticKernel.AI.ChatCompletion;
-using Microsoft.SemanticKernel.Configuration;
+using Microsoft.SemanticKernel.Connectors.AI.OpenAI.ChatCompletion;
 using Microsoft.SemanticKernel.Orchestration;
+using Microsoft.SemanticKernel.SkillDefinition;
 using NetCoreAudio;
 
 namespace ConversationalSpeaker
@@ -41,24 +42,42 @@ namespace ConversationalSpeaker
             IKernel semanticKernel,
             AzCognitiveServicesSpeechSkill speechSkill,
             IOptions<OpenAiServiceOptions> openAIOptions,
+            IOptions<AzureOpenAiServiceOptions> azureOpenAIOptions,
             IOptions<GeneralOptions> generalOptions,
             ILogger<HostedService> logger)
         {
             _logger = logger;
+            
+            _semanticKernel = semanticKernel;
 
+            // OpenAI
             _chatRequestSettings = new ChatRequestSettings()
             {
                 MaxTokens = openAIOptions.Value.MaxTokens,
                 Temperature = openAIOptions.Value.Temperature,
                 FrequencyPenalty = openAIOptions.Value.FrequencyPenalty,
                 PresencePenalty = openAIOptions.Value.PresencePenalty,
-                TopP = openAIOptions.Value.TopP
+                TopP = openAIOptions.Value.TopP,
+                StopSequences = new string[] { "\n\n" }
             };
+            _semanticKernel.Config.AddOpenAIChatCompletionService(
+                openAIOptions.Value.Model, openAIOptions.Value.Key, alsoAsTextCompletion: true, logger: _logger);
+
+            // Azure OpenAI
+            //_chatRequestSettings = new ChatRequestSettings()
+            //{
+            //    MaxTokens = azureOpenAIOptions.Value.MaxTokens,
+            //    Temperature = azureOpenAIOptions.Value.Temperature,
+            //    FrequencyPenalty = azureOpenAIOptions.Value.FrequencyPenalty,
+            //    PresencePenalty = azureOpenAIOptions.Value.PresencePenalty,
+            //    TopP = azureOpenAIOptions.Value.TopP,
+            //    StopSequences = new string[] { "\n\n" }
+            //};
+            //_semanticKernel.Config.AddAzureChatCompletionService(
+            //    azureOpenAIOptions.Value.Deployment, azureOpenAIOptions.Value.Endpoint, azureOpenAIOptions.Value.Key, alsoAsTextCompletion: true, logger: _logger);
 
             _wakeWordListener = wakeWordListener;
-            _semanticKernel = semanticKernel;
 
-            _semanticKernel.Config.AddOpenAIChatCompletion("chat", openAIOptions.Value.Model, openAIOptions.Value.Key, openAIOptions.Value.OrganizationId);
             _chatCompletion = _semanticKernel.GetService<IChatCompletion>();
             _chatHistory = (OpenAIChatHistory)_chatCompletion.CreateNewChat(generalOptions.Value.SystemPrompt);
 

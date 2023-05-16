@@ -15,12 +15,12 @@
   <ItemGroup>
     <PackageReference Include="AI.Dev.OpenAI.GPT" Version="1.0.2" />
     <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.5" />
-    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.26.0" />
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.28.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0-preview.2.23128.3" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0-preview.2.23128.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0-preview.2.23128.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0-preview.2.23128.3" />
-    <PackageReference Include="Microsoft.SemanticKernel" Version="0.9.61.1-preview" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="0.13.442.1-preview" />
 	<PackageReference Include="NetCoreAudio" Version="1.7.0" />
   </ItemGroup>
 

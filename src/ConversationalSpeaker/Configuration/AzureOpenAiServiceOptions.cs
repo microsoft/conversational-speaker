@@ -3,7 +3,7 @@
     /// <summary>
     /// Configuration for interacting with Azure OpenAI.
     /// </summary>
-    public class AzureOpenAiOptions
+    public class AzureOpenAiServiceOptions
     {
         /// <summary>
         /// API Key.

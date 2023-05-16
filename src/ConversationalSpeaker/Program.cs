@@ -29,7 +29,7 @@ builder.ConfigureServices((context, services) =>
     // Setup configuration options
     IConfiguration configurationRoot = context.Configuration;
     services.Configure<AzureCognitiveServicesOptions>(configurationRoot.GetSection("AzureCognitiveServices"));
-    services.Configure<AzureOpenAiOptions>(configurationRoot.GetSection("AzureOpenAI"));
+    services.Configure<AzureOpenAiServiceOptions>(configurationRoot.GetSection("AzureOpenAI"));
     services.Configure<GeneralOptions>(configurationRoot.GetSection("General"));
     services.Configure<OpenAiServiceOptions>(configurationRoot.GetSection("OpenAI"));
 
