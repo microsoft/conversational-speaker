@@ -19,7 +19,7 @@ This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Wind
   - [Azure Cognitive Speech Services](https://aka.ms/friendbot/azurecog)
     - **Free tier**: 5 audio hours per month and 1 concurrent request. 
     - **Free $200 credit**: With a new Azure account that can be used during the first 30 days.
-  - [OpenAI](https://aka.ms/maker/openai/pricing)
+  - [OpenAI](https://aka.ms/maker/openai/pricing) OR [Azure OpenAI](https://learn.microsoft.com/azure/ai-services/openai/overview)
     - **$0.002 / 1K tokens / ~750 words**: ChatGPT (gpt-3.5-turbo)
     - **Free $18 credit**: With a new OpenAI account that can be used during your first 90 days.
     
@@ -80,6 +80,9 @@ The conversational speaker uses OpenAI's models to hold a friendly conversation.
   1. Click `+ Create new secret key`. Copy the generated key and save it in a secure location for later.
 
   _If you are curious to play with the large language models directly, check out the https://platform.openai.com/playground?mode=chat at the top of the page after logging in to https://aka.ms/maker/openai._
+
+## [OPTIONAL] Azure OpenAI
+If you want to use Azure OpenAI instead of OpenAI directly, look at [src/ConversationalSpeaker/HostedServices/HostedService.cs](src/ConversationalSpeaker/HostedServices/HostedService.cs) and follow the instructions in the constructor to switch between the two.
 
 # The Code
 ## 1. Code Configuration

@@ -50,7 +50,13 @@ namespace ConversationalSpeaker
             
             _semanticKernel = semanticKernel;
 
-            // OpenAI
+            //
+            // To switch from using OpenAI to Azure OpenAI, comment out the "OpenAI" section below
+            // and uncomment the subsequent "Azure OpenAI" section. Make sure you have updated
+            // the `/src/configuration.json` with your Azure OpenAI settings as well.
+            // 
+
+            // OpenAI BEGIN
             _chatRequestSettings = new ChatRequestSettings()
             {
                 MaxTokens = openAIOptions.Value.MaxTokens,
@@ -62,8 +68,9 @@ namespace ConversationalSpeaker
             };
             _semanticKernel.Config.AddOpenAIChatCompletionService(
                 openAIOptions.Value.Model, openAIOptions.Value.Key, alsoAsTextCompletion: true, logger: _logger);
+            // OpenAI END
 
-            // Azure OpenAI
+            // Azure OpenAI BEGIN
             //_chatRequestSettings = new ChatRequestSettings()
             //{
             //    MaxTokens = azureOpenAIOptions.Value.MaxTokens,
@@ -75,6 +82,7 @@ namespace ConversationalSpeaker
             //};
             //_semanticKernel.Config.AddAzureChatCompletionService(
             //    azureOpenAIOptions.Value.Deployment, azureOpenAIOptions.Value.Endpoint, azureOpenAIOptions.Value.Key, alsoAsTextCompletion: true, logger: _logger);
+            // Azure OpenAI END
 
             _wakeWordListener = wakeWordListener;
 
