@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <UserSecretsId>90b505b2-cc18-476c-b551-e87daf833643</UserSecretsId>
@@ -15,11 +15,11 @@
   <ItemGroup>
     <PackageReference Include="AI.Dev.OpenAI.GPT" Version="1.0.2" />
     <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.5" />
-    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.28.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0-preview.2.23128.3" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0-preview.2.23128.3" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0-preview.2.23128.3" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0-preview.2.23128.3" />
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.36.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="0.13.442.1-preview" />
 	<PackageReference Include="NetCoreAudio" Version="1.7.0" />
   </ItemGroup>
