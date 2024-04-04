@@ -2,7 +2,7 @@
 ## Now with [Semantic Kernel](https://aka.ms/skrepo) and [ChatGPT](https://openai.com/blog/chatgpt)!
 The Conversational Speaker, a.k.a. "Friend Bot", uses a Raspberry Pi (or desktop) to enable spoken conversation with OpenAI large language models. This implementation listens to speech, processes the conversation through the OpenAI service, and responds back.
 
-This project is written in .NET 6 which supports Linux/Raspbian, macOS, and Windows.
+This project is written in .NET 8 which supports Linux/Raspbian, macOS, and Windows.
 
 ![Conversational Speaker](/package.png "Conversational Speaker")
 
@@ -87,10 +87,10 @@ If you want to use Azure OpenAI instead of OpenAI directly, look at [src/Convers
 # The Code
 ## 1. Code Configuration
 1. On the Raspberry Pi or your PC, open a command-line terminal.
-1. Install .NET 6 SDK.
+1. Install .NET 8 SDK.
    - For Raspberry Pi and Linux:
      ```bash
-     curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 6.0
+     curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0
      ``` 
      After installation is complete (it may take a few minutes), add dotnet to the command search paths.
      ```bash
@@ -102,7 +102,7 @@ If you want to use Azure OpenAI instead of OpenAI directly, look at [src/Convers
      ```bash
      dotnet --version
      ```
-   - For Windows, go to https://aka.ms/maker/dotnet/download, under .NET 6.0 click `Download .NET SDK x64`, and run the installer.
+   - For Windows, go to https://aka.ms/maker/dotnet/download, under .NET 8.0 click `Download .NET SDK x64`, and run the installer.
 1. Clone the repo.
    ```bash
    git clone https://github.com/microsoft/conversational-speaker.git
