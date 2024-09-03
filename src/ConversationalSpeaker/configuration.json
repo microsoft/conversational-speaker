@@ -16,7 +16,7 @@
     "Key": "", // dotnet user-secrets set "AzureCognitiveServices:Key" "****"
     "Region": "", // dotnet user-secrets set "AzureCognitiveServices:Region" "****"
     "SpeechRecognitionLanguage": "en-US",
-    "SpeechSynthesisVoiceName": "en-US-JennyNeural", // For a list of available voices, see https://aka.ms/maker/friendbot/voicenames
+    "SpeechSynthesisVoiceName": "en-US-BlueNeural", // For a list of available voices, see https://aka.ms/maker/friendbot/voicenames
     "EnableSpeechStyle": "false", // TODO: not supported yet after the migration to ChatGPT.
     "Rate": "+15%", // https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/speech-synthesis-markup-voice#adjust-prosody
     "WakePhraseModel": "hey-computer.table"
